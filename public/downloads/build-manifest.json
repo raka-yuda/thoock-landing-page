@@ -1,0 +1,56 @@
+{
+  "product": "Thoock",
+  "version": "0.1.0",
+  "buildType": "release-preview",
+  "builtAt": "2026-10-14T19:05:09.386987+00:00",
+  "sourceRevision": "1ee20b1b5f33755ccf3bc307305dac0ea3857a78",
+  "sourceHasUncommittedChanges": true,
+  "sourceSnapshotSha256": "3c4c60e7cadf6f062bcc8c880da090d71cfadd86f07a4b9923243c9ccac3bba7",
+  "verification": {
+    "frontendBuild": true,
+    "uiUnitTestsPassed": 7,
+    "macOSCodeSignature": "verified-ad-hoc",
+    "macOSNotarized": false,
+    "macOSArchiveIntegrity": "verified",
+    "macOSExecutableMinimumOS": "11.0",
+    "windowsAppPE": {
+      "machine": "0x8664",
+      "authenticodePresent": false
+    },
+    "windowsInstallerPE": {
+      "machine": "0x14c",
+      "authenticodePresent": false
+    },
+    "windowsRuntimeTested": false,
+    "workspaceDataIncluded": false
+  },
+  "artifacts": [
+    {
+      "filename": "Thoock_0.1.0_macos_arm64.dmg",
+      "url": "/downloads/Thoock_0.1.0_macos_arm64.dmg",
+      "platform": "macOS",
+      "architecture": "arm64",
+      "format": "dmg",
+      "bytes": 5678666,
+      "sha256": "64a293fe860adb02105ef3369aca1d7393700f5004d23bc1436fd44db2e85e69"
+    },
+    {
+      "filename": "Thoock_0.1.0_macos_arm64.zip",
+      "url": "/downloads/Thoock_0.1.0_macos_arm64.zip",
+      "platform": "macOS",
+      "architecture": "arm64",
+      "format": "zip",
+      "bytes": 5621422,
+      "sha256": "78d801a8571cacfee5664486f8612b88a95d9ec1a41918340ed2359e4e93c58e"
+    },
+    {
+      "filename": "Thoock_0.1.0_windows_x64_setup.exe",
+      "url": "/downloads/Thoock_0.1.0_windows_x64_setup.exe",
+      "platform": "Windows",
+      "architecture": "x64",
+      "format": "nsis",
+      "bytes": 4282823,
+      "sha256": "3b4379844aeef622576b30b70416a88db68f07a95e1622d56891789760e9545a"
+    }
+  ]
+}
