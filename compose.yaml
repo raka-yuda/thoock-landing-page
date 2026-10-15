@@ -1,0 +1,10 @@
+services:
+  web:
+    image: ${THOOCK_IMAGE:-thoock-landing-page:latest}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${THOOCK_PORT:-3006}:8080"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL

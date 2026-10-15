@@ -1,0 +1,136 @@
+name: CI/CD — Thoock
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: thoock-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  secrets:
+    name: Scan commit history for credentials
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: false
+      - run: go install github.com/zricethezav/gitleaks/v8@v8.24.3
+      - run: gitleaks git --redact --no-banner
+
+  verify:
+    name: Build and browser tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm audit --audit-level=high
+      - run: npm test
+      - name: Upload browser diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-diagnostics
+          path: test-results/
+          retention-days: 7
+
+  image:
+    name: Build and smoke-test deployment image
+    needs: [verify, secrets]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build image
+        run: docker build -t thoock-landing-page:${{ github.sha }} .
+      - name: Check production routes and downloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run -d --name thoock-smoke -p 127.0.0.1:8080:8080 thoock-landing-page:${{ github.sha }}
+          trap 'docker logs thoock-smoke; docker rm -f thoock-smoke' EXIT
+          curl --fail --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:8080/health
+          curl --fail http://127.0.0.1:8080/ -o /tmp/thoock-home.html
+          grep -q 'data-prerendered' /tmp/thoock-home.html
+          curl --fail http://127.0.0.1:8080/changelog/ -o /tmp/thoock-changelog.html
+          grep -q 'data-prerendered' /tmp/thoock-changelog.html
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/changelog)" = 308
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/missing-page)" = 404
+          mkdir -p /tmp/thoock-downloads
+          cd /tmp/thoock-downloads
+          curl --fail -O http://127.0.0.1:8080/downloads/SHA256SUMS.txt
+          while read -r checksum filename; do
+            curl --fail -O "http://127.0.0.1:8080/downloads/$filename"
+          done < SHA256SUMS.txt
+          sha256sum -c SHA256SUMS.txt
+      - name: Save tested image
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.DEPLOY_ENABLED == 'true'
+        run: docker save thoock-landing-page:${{ github.sha }} | gzip > thoock-image.tar.gz
+      - name: Upload deployment image
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.DEPLOY_ENABLED == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-image
+          path: thoock-image.tar.gz
+          retention-days: 1
+
+  deploy:
+    name: Deploy tested image over SSH
+    needs: image
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: thoock-production
+      cancel-in-progress: false
+    env:
+      HOST: ${{ secrets.HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: deployment-image
+      - name: Configure SSH
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${HOST:?Missing HOST secret}"
+          : "${DEPLOY_USER:?Missing DEPLOY_USER secret}"
+          : "${SSH_PRIVATE_KEY:?Missing SSH_PRIVATE_KEY secret}"
+          : "${SSH_KNOWN_HOSTS:?Missing SSH_KNOWN_HOSTS secret}"
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+      - name: Deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="thoock-image-${GITHUB_SHA}.tar.gz"
+          ssh "$DEPLOY_USER@$HOST" 'mkdir -p /opt/thoock-landing-page/app'
+          scp thoock-image.tar.gz "$DEPLOY_USER@$HOST:/opt/thoock-landing-page/app/$archive"
+          scp compose.yaml scripts/deploy.sh "$DEPLOY_USER@$HOST:/opt/thoock-landing-page/app/"
+          ssh "$DEPLOY_USER@$HOST" "cd /opt/thoock-landing-page/app && THOOCK_IMAGE=thoock-landing-page:${GITHUB_SHA} IMAGE_ARCHIVE=$archive bash deploy.sh"
+      - name: Remove local SSH key
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519

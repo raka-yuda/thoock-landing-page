@@ -1,0 +1,15 @@
+.git
+.github
+node_modules
+dist
+reports
+test-results
+playwright-report
+*.tsbuildinfo
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.log
