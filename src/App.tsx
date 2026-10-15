@@ -1,32 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import ArrowUpRightIcon from 'lucide-react/dist/esm/icons/arrow-up-right.mjs';
 import DownloadSimpleIcon from 'lucide-react/dist/esm/icons/download.mjs';
 import MoonIcon from 'lucide-react/dist/esm/icons/moon.mjs';
 import SunIcon from 'lucide-react/dist/esm/icons/sun.mjs';
 import { useEntranceMotion } from './useEntranceMotion';
+import { useAppearance } from './useAppearance';
 
 function Brand({ small = false }: { small?: boolean }) {
   return <a href="/#top" className={`brand ${small ? 'brand-small' : ''}`} aria-label="Thoock home"><img src="/thoock-icon.svg" width="38" height="38" alt="" /><span>Thoock</span></a>;
 }
 
 function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    const media = matchMedia('(prefers-color-scheme: dark)');
-    setDark(document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && media.matches));
-    const listener = () => { if (!document.documentElement.dataset.theme) setDark(media.matches); };
-    media.addEventListener('change', listener);
-    return () => media.removeEventListener('change', listener);
-  }, []);
-  function toggle() {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.dataset.theme = next ? 'dark' : 'light';
-    try { localStorage.setItem('thoock-appearance', next ? 'dark' : 'light'); } catch { /* Keep session choice. */ }
-  }
-  return <button className="icon-button theme-toggle" onClick={toggle} aria-label={`Switch to ${dark ? 'light' : 'dark'} appearance`}>{dark ? <SunIcon size={19} /> : <MoonIcon size={19} />}</button>;
+  const { dark, toggleAppearance } = useAppearance();
+  return <button className="icon-button theme-toggle" onClick={toggleAppearance} aria-label={`Switch to ${dark ? 'light' : 'dark'} appearance`}>{dark ? <SunIcon size={19} /> : <MoonIcon size={19} />}</button>;
 }
+
 function Header({ changelogPage = false }: { changelogPage?: boolean }) {
   return <header className="header"><div className="header-inner"><Brand /><nav aria-label="Main navigation"><a href="/#workflow">Workflow</a><a href="/#workspace">Your workspace</a><a href="/changelog/" aria-current={changelogPage ? 'page' : undefined}>Changelog</a><a href="/#faq">FAQ</a></nav><div className="header-actions"><ThemeToggle /><a className="button primary nav-download" href="/#download"><DownloadSimpleIcon size={17} /><span>Download Thoock</span></a></div></div></header>;
 }

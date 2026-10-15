@@ -237,3 +237,25 @@ test('mobile loads the selected hero image without also preloading the desktop o
   expect(requested).not.toContain('/screenshots/review-queue.webp');
   await page.close();
 });
+
+test('appearance follows the system until overridden and synchronizes between tabs', async ({ context }) => {
+  const first = await context.newPage();
+  const second = await context.newPage();
+  await Promise.all([first.emulateMedia({ colorScheme: 'light' }), second.emulateMedia({ colorScheme: 'light' })]);
+  await Promise.all([first.goto('/'), second.goto('/')]);
+  await expect(first.locator('#root')).toHaveAttribute('data-hydrated', 'true');
+  await expect(second.locator('#root')).toHaveAttribute('data-hydrated', 'true');
+  await first.emulateMedia({ colorScheme: 'dark' });
+  await expect(first.getByRole('button', { name: 'Switch to light appearance' })).toBeVisible();
+  await first.getByRole('button', { name: 'Switch to light appearance' }).click();
+  await second.getByRole('button', { name: 'Switch to dark appearance' }).click();
+  await expect(first.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(first.getByRole('button', { name: 'Switch to light appearance' })).toBeVisible();
+  await first.emulateMedia({ colorScheme: 'light' });
+  await expect(first.getByRole('button', { name: 'Switch to light appearance' })).toBeVisible();
+  await second.evaluate(() => localStorage.removeItem('thoock-appearance'));
+  await expect(first.locator('html')).not.toHaveAttribute('data-theme');
+  await first.emulateMedia({ colorScheme: 'light' });
+  await expect(first.getByRole('button', { name: 'Switch to dark appearance' })).toBeVisible();
+  await Promise.all([first.close(), second.close()]);
+});
