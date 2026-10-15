@@ -259,3 +259,21 @@ test('appearance follows the system until overridden and synchronizes between ta
   await expect(first.getByRole('button', { name: 'Switch to dark appearance' })).toBeVisible();
   await Promise.all([first.close(), second.close()]);
 });
+
+test('screenshot previews expose their name and restore focus across repeated opens', async ({ page }) => {
+  await page.goto('/');
+  for (const [button, name] of [
+    ['Enlarge commercial brief screenshot', 'Commercial brief in Thoock'],
+    ['Enlarge image review screenshot', 'Image review in Thoock'],
+  ]) {
+    const trigger = page.getByRole('button', { name: button });
+    await trigger.click();
+    const dialog = page.getByRole('dialog', { name });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('img')).toHaveCount(1);
+    await dialog.getByRole('button', { name: 'Close screenshot' }).click();
+    await expect(dialog).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    await expect(page.locator('.image-dialog img')).toHaveCount(0);
+  }
+});
