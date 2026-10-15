@@ -81,10 +81,10 @@ jobs:
           done < SHA256SUMS.txt
           sha256sum -c SHA256SUMS.txt
       - name: Save tested image
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.DEPLOY_ENABLED == 'true'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: docker save thoock-landing-page:${{ github.sha }} | gzip > thoock-image.tar.gz
       - name: Upload deployment image
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.DEPLOY_ENABLED == 'true'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: deployment-image
@@ -94,7 +94,7 @@ jobs:
   deploy:
     name: Deploy tested image over SSH
     needs: image
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.DEPLOY_ENABLED == 'true'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     environment: production
     concurrency:

@@ -80,12 +80,12 @@ The React application is split into a small first-paint bootstrap and a separate
 
 The container serves prebuilt HTML with unprivileged Nginx on port 8080. Compose exposes it only on `127.0.0.1:3006`, leaving the portfolio's port 3005 available. Hashed JS/CSS receives immutable caching; HTML revalidates. Unknown routes return 404.
 
-To enable delivery to your VM:
+To configure delivery to your VM:
 
 1. Install Docker with Compose v2 (supporting `up --wait`) on a Linux x64 VM. Give the deployment user Docker access and ownership of `/opt/thoock-landing-page/app`. Keep this directory separate from the portfolio.
 2. Add GitHub repository or `production` environment secrets: `HOST`, `DEPLOY_USER`, `SSH_PRIVATE_KEY` (a dedicated deployment key), and `SSH_KNOWN_HOSTS` (the VM's host-key entry, verified through a trusted channel). No credential values belong in this repository.
 3. Configure the VM's existing reverse proxy and TLS for the chosen domain, forwarding to `http://127.0.0.1:3006`.
-4. Set the repository Actions variable `DEPLOY_ENABLED` to `true`, then run the workflow or push to `main`. Until enabled, CI runs and deployment is skipped.
+4. Merge or push changes to `main`. After CI passes, the workflow automatically uploads and deploys the tested image. Pull requests and manual workflow runs execute checks without deploying. No deployment-enable variable is required.
 
 CI uploads its tested Docker image, transfers it over SSH, and starts that exact commit-tagged image with Compose. Deployment waits for container health and reports failures; it does not stop the existing service before building or modify the portfolio's proxy. Existing images remain available for a manual rollback. Local container verification uses `docker build -t thoock-landing-page:latest .` and `docker compose up -d --wait`.
 
