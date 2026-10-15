@@ -5,7 +5,12 @@ import './features.css';
 // The static HTML is already usable. Keep React off the first-paint path and
 // attach the interactive layer after the browser has drawn that HTML.
 let hydration: Promise<void> | undefined;
-const start = () => hydration ??= import('./hydrate').then(module => module.hydrate());
+const start = () => hydration ??= Promise.all([
+  import('./hydrate'),
+  /^\/changelog(?:\/|$)/.test(location.pathname)
+    ? import('./pages/ChangelogPage')
+    : import('./pages/HomePage'),
+]).then(([module, { default: Page }]) => module.hydrate(Page));
 const warm = () => { void start(); };
 
 // A quick first click must still work if it beats the interactive download.

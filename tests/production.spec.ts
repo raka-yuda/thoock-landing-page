@@ -27,3 +27,23 @@ test('built routes hydrate without replacing mismatched HTML or losing interacti
   expect(errors).toEqual([]);
   await page.close();
 });
+
+test('production visits fetch only their own page code and mobile-sized changelog image', async ({ browser }) => {
+  for (const route of ['/', '/changelog/']) {
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
+    const requested: string[] = [];
+    page.on('request', request => requested.push(new URL(request.url()).pathname));
+    await page.goto(`http://127.0.0.1:4173${route}`);
+    await expect(page.locator('#root')).toHaveAttribute('data-hydrated', 'true');
+    const ownPage = route === '/' ? 'HomePage-' : 'ChangelogPage-';
+    const otherPage = route === '/' ? 'ChangelogPage-' : 'HomePage-';
+    expect(requested.some(path => path.includes(ownPage) && path.endsWith('.js'))).toBe(true);
+    expect(requested.some(path => path.includes(otherPage) && path.endsWith('.js'))).toBe(false);
+    if (route === '/changelog/') {
+      await expect(page.locator('.release-figure img')).toHaveJSProperty('complete', true);
+      expect(requested).toContain('/screenshots/review-480.webp');
+      expect(requested).not.toContain('/screenshots/review.webp');
+    }
+    await page.close();
+  }
+});
