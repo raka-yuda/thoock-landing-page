@@ -43,6 +43,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm audit --audit-level=high
+      - run: npm run test:readiness
       - run: npm test
       - name: Upload browser diagnostics on failure
         if: failure()
@@ -66,7 +67,7 @@ jobs:
           set -euo pipefail
           docker run -d --name thoock-smoke -p 127.0.0.1:8080:8080 thoock-landing-page:${{ github.sha }}
           trap 'docker logs thoock-smoke; docker rm -f thoock-smoke' EXIT
-          curl --fail --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:8080/health
+          bash scripts/wait-for-http.sh http://127.0.0.1:8080/health
           curl --fail http://127.0.0.1:8080/ -o /tmp/thoock-home.html
           grep -q 'data-prerendered' /tmp/thoock-home.html
           curl --fail http://127.0.0.1:8080/changelog/ -o /tmp/thoock-changelog.html
