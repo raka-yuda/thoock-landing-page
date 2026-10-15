@@ -237,3 +237,43 @@ test('mobile loads the selected hero image without also preloading the desktop o
   expect(requested).not.toContain('/screenshots/review-queue.webp');
   await page.close();
 });
+
+test('appearance follows the system until overridden and synchronizes between tabs', async ({ context }) => {
+  const first = await context.newPage();
+  const second = await context.newPage();
+  await Promise.all([first.emulateMedia({ colorScheme: 'light' }), second.emulateMedia({ colorScheme: 'light' })]);
+  await Promise.all([first.goto('/'), second.goto('/')]);
+  await expect(first.locator('#root')).toHaveAttribute('data-hydrated', 'true');
+  await expect(second.locator('#root')).toHaveAttribute('data-hydrated', 'true');
+  await first.emulateMedia({ colorScheme: 'dark' });
+  await expect(first.getByRole('button', { name: 'Switch to light appearance' })).toBeVisible();
+  await first.getByRole('button', { name: 'Switch to light appearance' }).click();
+  await second.getByRole('button', { name: 'Switch to dark appearance' }).click();
+  await expect(first.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(first.getByRole('button', { name: 'Switch to light appearance' })).toBeVisible();
+  await first.emulateMedia({ colorScheme: 'light' });
+  await expect(first.getByRole('button', { name: 'Switch to light appearance' })).toBeVisible();
+  await second.evaluate(() => localStorage.removeItem('thoock-appearance'));
+  await expect(first.locator('html')).not.toHaveAttribute('data-theme');
+  await first.emulateMedia({ colorScheme: 'light' });
+  await expect(first.getByRole('button', { name: 'Switch to dark appearance' })).toBeVisible();
+  await Promise.all([first.close(), second.close()]);
+});
+
+test('screenshot previews expose their name and restore focus across repeated opens', async ({ page }) => {
+  await page.goto('/');
+  for (const [button, name] of [
+    ['Enlarge commercial brief screenshot', 'Commercial brief in Thoock'],
+    ['Enlarge image review screenshot', 'Image review in Thoock'],
+  ]) {
+    const trigger = page.getByRole('button', { name: button });
+    await trigger.click();
+    const dialog = page.getByRole('dialog', { name });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('img')).toHaveCount(1);
+    await dialog.getByRole('button', { name: 'Close screenshot' }).click();
+    await expect(dialog).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    await expect(page.locator('.image-dialog img')).toHaveCount(0);
+  }
+});

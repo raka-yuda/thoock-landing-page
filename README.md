@@ -43,7 +43,7 @@ Micro interactions use short CSS transitions and viewport entrance animations. T
 
 ## Feature showcase
 
-The homepage feature board groups planning, production/review, and delivery into three visual stories. Visitors can enlarge the actual product screenshots. Panels reveal once on scroll and have subtle hover feedback; there is no timed playback or replay control. The component lives in `src/FeatureShowcase.tsx`, with responsive materials in `src/features.css`.
+The homepage feature board groups planning, production/review, and delivery into three visual stories. Visitors can enlarge the actual product screenshots. Panels reveal once on scroll and have subtle hover feedback; there is no timed playback or replay control. The component lives in `src/FeatureShowcase.tsx`, with responsive materials in `src/features.css`. Its selected screenshot is the single source of truth for the native dialog; the accessible title and image commit before focus moves, and closing releases the full-size image.
 
 Page-load motion introduces the header, app mark, headline, copy, download actions, and screenshot layers in order. IntersectionObserver triggers one-time staggered entrances for the feature panels, workspace, downloads, FAQ, and changelog as they enter the viewport. `src/useEntranceMotion.ts` owns both sequences, preserves existing screenshot transforms, cleans up animations on unmount, and cancels immediately if reduced motion is enabled during the session. It does not intercept scrolling or leave hidden content behind.
 
@@ -88,3 +88,9 @@ To enable delivery to your VM:
 4. Set the repository Actions variable `DEPLOY_ENABLED` to `true`, then run the workflow or push to `main`. Until enabled, CI runs and deployment is skipped.
 
 CI uploads its tested Docker image, transfers it over SSH, and starts that exact commit-tagged image with Compose. Deployment waits for container health and reports failures; it does not stop the existing service before building or modify the portfolio's proxy. Existing images remain available for a manual rollback. Local container verification uses `docker build -t thoock-landing-page:latest .` and `docker compose up -d --wait`.
+
+## React page structure
+
+`src/App.tsx` owns the shared header, footer, and entrance behavior. `src/pages/HomePage.tsx` and `src/pages/ChangelogPage.tsx` contain each route's content, sharing the window material through `src/components/WindowFrame.tsx`. The bootstrap fetches the current page and React runtime concurrently; visitors do not download the other page's JavaScript. The server entry still renders both routes into complete static HTML. The changelog uses responsive screenshot variants and accurate intrinsic dimensions for mobile loading.
+
+`src/useAppearance.ts` subscribes React to the browser's appearance preference using `useSyncExternalStore`. System changes apply until a visitor chooses an explicit theme. Saved changes and clearing the preference in another tab synchronize the document and toggle label without a refresh. Its server snapshot keeps prerendered HTML and hydration consistent.

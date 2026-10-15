@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useId, useLayoutEffect, useRef, useState } from 'react';
 import ArrowsOutSimpleIcon from 'lucide-react/dist/esm/icons/maximize-2.mjs';
 import ArrowRightIcon from 'lucide-react/dist/esm/icons/arrow-right.mjs';
 import BookOpenIcon from 'lucide-react/dist/esm/icons/book-open.mjs';
@@ -20,13 +20,21 @@ type Preview = keyof typeof previews;
 
 export default function FeatureShowcase() {
   const dialog = useRef<HTMLDialogElement>(null);
-  const [preview, setPreview] = useState<Preview>('research');
-  const [previewOpen, setPreviewOpen] = useState(false);
+  const [preview, setPreview] = useState<Preview | null>(null);
+  const titleId = useId();
+  const item = preview === null ? null : previews[preview];
 
-  function openPreview(value: Preview) { setPreview(value); setPreviewOpen(true); dialog.current?.showModal(); }
+  // Commit the selected image and accessible name before the native dialog
+  // moves focus. Native close/Escape events return ownership to React state.
+  useLayoutEffect(() => {
+    if (preview === null) return;
+    const element = dialog.current!;
+    element.showModal();
+    return () => { if (element.open) element.close(); };
+  }, [preview]);
   function screenshot(value: Preview, className: string) {
     const item = previews[value];
-    return <button className={`feature-preview ${className}`} onClick={() => openPreview(value)} aria-label={`Enlarge ${item.title.toLowerCase()} screenshot`}>
+    return <button className={`feature-preview ${className}`} onClick={() => setPreview(value)} aria-label={`Enlarge ${item.title.toLowerCase()} screenshot`}>
       <span className="feature-preview-bar" aria-hidden="true"><span className="window-dots"><i /><i /><i /></span><span>{item.title}</span><ArrowsOutSimpleIcon size={13} /></span>
       <img src={`/screenshots/${item.image}.webp`} srcSet={`/screenshots/${item.image}-480.webp 480w, /screenshots/${item.image}-800.webp 800w, /screenshots/${item.image}.webp ${item.image === 'review-queue' ? 1500 : item.image === 'brief' ? 1100 : 1200}w`} sizes={value === 'brief' ? '270px' : '(max-width: 767px) 360px, 560px'} alt={item.caption} width="1200" height="850" loading="lazy" />
     </button>;
@@ -49,6 +57,9 @@ export default function FeatureShowcase() {
         <div className="feature-bottom-note"><DownloadSimpleIcon size={15} /> Prepared in Thoock. Uploaded by you.</div>
       </article>
     </div>
-    <dialog ref={dialog} className="image-dialog" onClose={() => setPreviewOpen(false)} onClick={event => { if (event.target === event.currentTarget) dialog.current?.close(); }}><div className="dialog-heading"><strong>{previews[preview].title} in Thoock</strong><button className="icon-button" onClick={() => dialog.current?.close()} aria-label="Close screenshot"><XIcon size={20} /></button></div>{previewOpen && <img src={`/screenshots/${previews[preview].image}.webp`} alt={previews[preview].caption} />}<p>{previews[preview].caption}</p></dialog>
+    <dialog ref={dialog} className="image-dialog" aria-labelledby={titleId} onClose={() => setPreview(null)} onClick={event => { if (event.target === event.currentTarget) dialog.current?.close(); }}>
+      <div className="dialog-heading"><strong id={titleId}>{item ? `${item.title} in Thoock` : 'Screenshot preview'}</strong><button className="icon-button" onClick={() => dialog.current?.close()} aria-label="Close screenshot"><XIcon size={20} /></button></div>
+      {item && <><img src={`/screenshots/${item.image}.webp`} alt={item.caption} /><p>{item.caption}</p></>}
+    </dialog>
   </section>;
 }

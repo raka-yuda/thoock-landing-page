@@ -1,18 +1,17 @@
-import { StrictMode, useEffect } from 'react';
+import { StrictMode } from 'react';
+import type { ComponentType } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import App from './App';
 
-export function hydrate() {
+// The bootstrap fetches the shared runtime and current page concurrently.
+export function hydrate(Page: ComponentType) {
   return new Promise<void>(resolve => {
     const root = document.getElementById('root')!;
-    function Ready() {
-      useEffect(() => {
-        root.dataset.hydrated = 'true';
-        resolve();
-      }, []);
-      return null;
-    }
-    const app = <StrictMode><App /><Ready /></StrictMode>;
+    const onHydrated = () => {
+      root.dataset.hydrated = 'true';
+      resolve();
+    };
+    const app = <StrictMode><App onHydrated={onHydrated}><Page /></App></StrictMode>;
     if (root.hasChildNodes()) hydrateRoot(root, app);
     else createRoot(root).render(app);
   });
