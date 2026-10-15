@@ -87,6 +87,8 @@ To configure delivery to your VM:
 3. Configure the VM's existing reverse proxy and TLS for the chosen domain, forwarding to `http://127.0.0.1:3006`.
 4. Merge or push changes to `main`. After CI passes, the workflow automatically uploads and deploys the tested image. Pull requests and manual workflow runs execute checks without deploying. No deployment-enable variable is required.
 
+`scripts/wait-for-http.sh` waits for the smoke-test container to serve its health endpoint, retrying connection resets, empty responses, and other startup errors within a bounded retry budget. `npm run test:readiness` checks immediate success, transient resets, and persistent failure using real HTTP connections.
+
 CI uploads its tested Docker image, transfers it over SSH, and starts that exact commit-tagged image with Compose. Deployment waits for container health and reports failures; it does not stop the existing service before building or modify the portfolio's proxy. Existing images remain available for a manual rollback. Local container verification uses `docker build -t thoock-landing-page:latest .` and `docker compose up -d --wait`.
 
 ## React page structure
