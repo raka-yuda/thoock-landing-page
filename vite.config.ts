@@ -6,6 +6,26 @@ export default defineConfig({
   plugins: [
     react(),
     {
+      name: 'thoock-release-data',
+      resolveId(id) {
+        if (id === 'virtual:thoock-releases') return '\0thoock-releases';
+      },
+      async load(id) {
+        if (id !== '\0thoock-releases') return;
+        const loadJSON = async (name: string) => {
+          const path = fileURLToPath(new URL(`./public/releases/${name}.json`, import.meta.url));
+          this.addWatchFile(path);
+          return JSON.parse(await readFile(path, 'utf8'));
+        };
+        const index = await loadJSON('index');
+        const latest = await loadJSON('latest');
+        const history = await Promise.all(index.versions.map((version: string) => loadJSON(version)));
+        // Public JSON remains canonical; expose it through Vite's module pipeline
+        // instead of importing static public assets as JavaScript in development.
+        return `export const latest = ${JSON.stringify(latest)}; export const history = ${JSON.stringify(history)};`;
+      },
+    },
+    {
       name: 'thoock-html',
       apply: 'serve',
       configurePreviewServer(server) {

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "notes": "Thoock 0.1.0 release preview for Apple silicon Macs and Windows x64. These installers predate the latest development changes.",
+  "notesUrl": "/changelog/",
+  "downloads": {
+    "darwin-aarch64": {
+      "platform": "macOS",
+      "architecture": "Apple silicon (ARM64)",
+      "url": "/downloads/0.1.0/Thoock_0.1.0_macos_arm64.dmg",
+      "bytes": 5678666,
+      "sha256": "64a293fe860adb02105ef3369aca1d7393700f5004d23bc1436fd44db2e85e69",
+      "note": "Release preview. Ad hoc signed; not notarized. For Apple silicon Macs.",
+      "alternativeUrl": "/downloads/0.1.0/Thoock_0.1.0_macos_arm64.zip"
+    },
+    "windows-x86_64": {
+      "platform": "Windows",
+      "architecture": "64-bit (x64)",
+      "url": "/downloads/0.1.0/Thoock_0.1.0_windows_x64_setup.exe",
+      "bytes": 4282823,
+      "sha256": "3b4379844aeef622576b30b70416a88db68f07a95e1622d56891789760e9545a",
+      "note": "Release preview. Unsigned installer; Windows runtime testing is pending."
+    }
+  }
+}

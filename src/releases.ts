@@ -1,3 +1,4 @@
+import { latest, history } from 'virtual:thoock-releases';
 export type Release = {
   platform: 'macOS' | 'Windows';
   architecture: string;
@@ -9,24 +10,25 @@ export type Release = {
   note: string;
   available: boolean;
 };
-// Matches public/downloads/build-manifest.json. Keep installer filenames stable.
-export const releases: Release[] = [
-  {
-    platform: 'macOS', architecture: 'Apple silicon (ARM64)', minimumOS: null,
-    version: '0.1.0', bytes: 5678666,
-    url: '/downloads/Thoock_0.1.0_macos_arm64.dmg',
-    alternativeUrl: '/downloads/Thoock_0.1.0_macos_arm64.zip',
-    note: 'Release preview. Ad hoc signed; not notarized. For Apple silicon Macs.',
-    available: true,
-  },
-  {
-    platform: 'Windows', architecture: '64-bit (x64)', minimumOS: null,
-    version: '0.1.0', bytes: 4282823,
-    url: '/downloads/Thoock_0.1.0_windows_x64_setup.exe',
-    note: 'Release preview. Unsigned installer; Windows runtime testing is pending.',
-    available: true,
-  },
-];
+type ReleaseManifest = {
+  schemaVersion: number;
+  version: string;
+  notes: string;
+  notesUrl: string;
+  downloads: Record<string, Omit<Release, 'minimumOS' | 'version' | 'available'>>;
+};
+const manifest = latest as ReleaseManifest;
+function downloads(release: ReleaseManifest): Release[] {
+  return Object.values(release.downloads).map(download => ({
+    ...download, version: release.version, minimumOS: null, available: true,
+  }));
+}
+// Latest is shared with the desktop checker; archived manifests keep old links stable.
+export const releases = downloads(manifest as ReleaseManifest);
+export const releaseHistory = (history as ReleaseManifest[]).map(release => ({
+  version: release.version, downloads: downloads(release), checksumsUrl: `/downloads/${release.version}/SHA256SUMS.txt`,
+}));
+export const checksumsUrl = `/downloads/${manifest.version}/SHA256SUMS.txt`;
 export function formatFileSize(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
