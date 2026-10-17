@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "version": "0.2.0",
+  "notes": "Thoock 0.2.0 — release preview\n\n- Move images, opportunities, briefs, and export history to recoverable Trash. Inspect storage usage, configure conservative cleanup, and remove workspace export copies.\n- Back up, restore, or reset a workspace with visible processing progress and cancellation. Reset keeps device preferences, downloaded models, and vault credentials; keys are never included in backups.\n- Create transparent PNG cutouts locally with an optional BiRefNet model download. Preview edits, preserve originals, and export transparent images as PNG. Glass and fine translucent details may need manual refinement.\n- Start from a task-focused dashboard and an optional setup guide for provider connections and first imports.\n- Use searchable floating selectors, compact row-action menus, sticky settings navigation, and focused settings sections.\n- Check for new releases from About & updates. Startup checks are optional; downloads open in the browser and installation remains manual.\n- Improve storage refreshes and provider-log paging, check available disk space, reconnect device vault references after recovery, and offer startup/rendering recovery instead of a blank screen.\n- Add reproducible media benchmarks through 10 GiB of generated 4K originals. The largest run verified fresh-workspace restore; full-size rollback replacement and Windows runtime performance remain untested.\n\nAvailability: Apple silicon macOS and Windows x64 preview installers. macOS is ad hoc signed, not notarized; Windows is unsigned and has not been installed or run on Windows. Local background removal requires macOS 13.3 or later. Intel Mac builds are not included.\n\nBefore updating, save a workspace backup and close Thoock. Install the new app over the previous version. Workspaces are separate from the installer; keeping an older installer does not roll back migrated workspace data. Restore a compatible backup if returning to an older app.\n",
+  "notesUrl": "/changelog/",
+  "downloads": {
+    "darwin-aarch64": {
+      "platform": "macOS",
+      "architecture": "Apple silicon (ARM64)",
+      "url": "/downloads/0.2.0/Thoock_0.2.0_macos_arm64.dmg",
+      "bytes": 5633771,
+      "sha256": "c03ebf26cfcf0885fd3e23c04a310bf8efc9bdd47d18606c2429c5a8427583c6",
+      "note": "Release preview. Ad hoc signed; not notarized. Apple silicon. Background removal requires macOS 13.3 or later.",
+      "alternativeUrl": "/downloads/0.2.0/Thoock_0.2.0_macos_arm64.zip"
+    },
+    "windows-x86_64": {
+      "platform": "Windows",
+      "architecture": "64-bit (x64)",
+      "url": "/downloads/0.2.0/Thoock_0.2.0_windows_x64_setup.exe",
+      "bytes": 4540966,
+      "sha256": "007c7f1b706d986e85a87b73df0560554878e931b17e1aa19e4f8361079cc11b",
+      "note": "Release preview. Unsigned installer; Windows runtime testing is pending."
+    }
+  }
+}

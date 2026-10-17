@@ -17,9 +17,9 @@ Browser tests use installed Google Chrome. The production site is static and bui
 
 ## Releases
 
-Installers live in `public/downloads/` and are copied into the production build. `src/releases.ts` points to the supplied v0.1.0 macOS ARM64 DMG (with ZIP alternative) and Windows x64 setup executable. The hero selects the operating-system family; architecture, preview status, and file sizes remain visible. Mobile visitors see the desktop download options. All installer links use the download attribute.
+Installers live in `public/downloads/` and are copied into the production build. `public/releases/latest.json` (read by `src/releases.ts`) points to the supplied v0.2.0 macOS ARM64 DMG (with ZIP alternative) and Windows x64 setup executable. The hero selects the operating-system family; architecture, preview status, and file sizes remain visible. Mobile visitors see the desktop download options. All installer links use the download attribute.
 
-The supplied `build-manifest.json` records file sizes, SHA-256 hashes, build provenance, and verification status. `SHA256SUMS.txt` is linked in the download panel. Update those files and `src/releases.ts` together when replacing installers. The current macOS preview is ad hoc signed and not notarized; Windows is unsigned and runtime testing is pending. Minimum supported OS versions are not advertised without verified runtime support. If publishing multiple CPU architectures, add explicit labeled choices.
+The latest `build-manifest.json` records file sizes, SHA-256 hashes, build provenance, and verification status. `SHA256SUMS.txt` is linked in the download panel. Stage releases with `npm run release:stage`; `npm run release:check` verifies every archived installer. See [release operations](docs/DESKTOP_RELEASES.md). The current macOS preview is ad hoc signed and not notarized; Windows is unsigned and runtime testing is pending. Minimum supported OS versions are not advertised without verified runtime support. If publishing multiple CPU architectures, add explicit labeled choices.
 
 ## Product imagery
 
@@ -35,9 +35,9 @@ Confirm platform support requirements and public use of the reference imagery, a
 
 ## Changelog
 
-The dedicated `/changelog` page uses an editorial release layout with version permalinks, product imagery, and full notes. The homepage links to it from navigation, the latest-version summary, and the footer. Vite builds `dist/changelog/index.html` so direct visits and refreshes work on static hosts with directory-index support.
+The dedicated `/changelog` page uses an editorial release layout with version permalinks, product imagery, and full notes. Each release links to its own versioned installers and checksums. The homepage links to it from navigation, the latest-version summary, and the footer. Vite builds `dist/changelog/index.html` so direct visits and refreshes work on static hosts with directory-index support.
 
-Add desktop updates, newest first, in `src/changelog.ts`. Each entry owns its version, documented update date, build status, highlights, and full notes. The download section reads its latest version and date from the same source. Keep installer availability in `src/releases.ts`; a documented developer update does not imply a public installer is available.
+Add desktop updates, newest first, in `src/changelog.ts`. Each entry owns its version, documented update date, build status, highlights, and full notes. Each release links to its own versioned installers and checksums. The download section reads its latest version and date from the same source. Keep installer availability in `public/releases/latest.json`; a documented developer update does not imply a public installer is available.
 
 Micro interactions use short CSS transitions and viewport entrance animations. They follow the operating-system reduced-motion preference, including changes during a session, and leave content visible when JavaScript animation is unavailable.
 
@@ -96,3 +96,7 @@ CI uploads its tested Docker image, transfers it over SSH, and starts that exact
 `src/App.tsx` owns the shared header, footer, and entrance behavior. `src/pages/HomePage.tsx` and `src/pages/ChangelogPage.tsx` contain each route's content, sharing the window material through `src/components/WindowFrame.tsx`. The bootstrap fetches the current page and React runtime concurrently; visitors do not download the other page's JavaScript. The server entry still renders both routes into complete static HTML. The changelog uses responsive screenshot variants and accurate intrinsic dimensions for mobile loading.
 
 `src/useAppearance.ts` subscribes React to the browser's appearance preference using `useSyncExternalStore`. System changes apply until a visitor chooses an explicit theme. Saved changes and clearing the preference in another tab synchronize the document and toggle label without a refresh. Its server snapshot keeps prerendered HTML and hydration consistent.
+
+## Versioned desktop releases
+
+Installers and their provenance live under `public/downloads/<version>/`. The archive index is `public/releases/index.json`; the homepage and optional desktop update checker use `public/releases/latest.json`. Previous installers remain available from the changelog, and original flat v0.1.0 download links remain valid. Deploy the whole `dist/` to retain all versions. See [release operations](docs/DESKTOP_RELEASES.md).

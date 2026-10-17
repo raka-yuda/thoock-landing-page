@@ -1,6 +1,26 @@
-// Newest first. Dates describe documented product updates, not installer releases.
+// Newest first. Every entry links to its immutable installer release manifest.
 // Source: thoock-desktop-app/package.json and docs/IMPLEMENTATION_STATUS.md.
 export const changelog = [
+  {
+    version: '0.2.0',
+    date: '2026-10-18',
+    status: 'Release preview',
+    title: 'More room to create. More control over your workspace.',
+    summary: 'Transparent cutouts, recoverable deletion, a clearer dashboard, and better tools for keeping a growing image library under control.',
+    highlights: [
+      { label: 'Manage your space', text: 'Move work to recoverable Trash, inspect storage usage, clean up disposable files, and start fresh without reinstalling.' },
+      { label: 'Make transparent cutouts', text: 'Download the optional local background-removal model, inspect a cutout preview, and export genuine transparent PNGs while preserving originals.' },
+      { label: 'Find your next step', text: 'A task-focused dashboard, optional setup guide, searchable selectors, and organized settings keep everyday work close at hand.' },
+    ],
+    details: [
+      'Backup, restore, and reset now show processing progress and support cancellation.',
+      'Provider keys reconnect from this device’s credential vault after recovery; backups never contain key values.',
+      'About & updates offers optional release checks and manual browser downloads.',
+      'Provider-log pagination, cached storage measurements, disk-space checks, and startup recovery improve reliability.',
+      'Generated 4K media benchmarks verified backup and fresh-workspace restore with over 10 GiB of originals on Apple silicon macOS; this is not a Windows performance claim.',
+    ],
+    availability: 'Apple silicon macOS and Windows x64 preview downloads. macOS is ad hoc signed and not notarized; Windows is unsigned and runtime testing is pending. Background removal requires macOS 13.3 or later. Save a backup before updating; older installers do not roll back workspace data.',
+  },
   {
     version: '0.1.0',
     date: '2026-10-14',

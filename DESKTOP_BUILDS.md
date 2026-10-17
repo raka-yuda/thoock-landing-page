@@ -1,38 +1,36 @@
-# Desktop downloads — 0.1.0
+# Desktop downloads
 
-Built on 15 October 2026 from the current desktop working tree, including the uncommitted responsive selection-bar changes. No source commit or push was made for these builds.
+The current release and every retained version are listed in
+`public/releases/index.json`. The homepage and desktop checker use
+`public/releases/latest.json`; the changelog offers downloads from each immutable
+version manifest, such as `public/releases/0.2.0.json`.
 
-## Files and serving
+Artifacts are grouped under `public/downloads/<version>/`:
 
-The artifacts live in `public/downloads/`. Vite copies this folder to `dist/downloads/` when the landing-page project is built. Serve the landing-page `dist/` directory; the download paths are:
+- `Thoock_<version>_macos_arm64.dmg` — Apple silicon installer disk image.
+- `Thoock_<version>_macos_arm64.zip` — the same app bundle as a ZIP.
+- `Thoock_<version>_windows_x64_setup.exe` — Windows x64 NSIS installer.
+- `SHA256SUMS.txt`, `build-manifest.json`, and `release-notes.md` — verification and release details.
 
-- `/downloads/Thoock_0.1.0_macos_arm64.dmg` — macOS installer disk image, Apple Silicon.
-- `/downloads/Thoock_0.1.0_macos_arm64.zip` — the same macOS app bundle in a ZIP archive.
-- `/downloads/Thoock_0.1.0_windows_x64_setup.exe` — Windows x64 NSIS installer.
-- `/downloads/SHA256SUMS.txt` — SHA-256 checksums.
-- `/downloads/build-manifest.json` — sizes, hashes, architectures, and build verification details.
+The original flat v0.1.0 installer URLs remain available. Their bytes are retained
+unchanged. Root `build-manifest.json` and `SHA256SUMS.txt` are latest-release aliases;
+use versioned paths for historical metadata.
 
-The existing landing-page download-button configuration in `src/releases.ts` is unchanged. These files can be linked directly using the paths above. The entries should describe these as unsigned preview downloads until platform testing and distribution signing are complete.
+Vite copies all retained versions to `dist/downloads/`. Deploy the whole `dist/`
+folder, not just the newest installers, to preserve previous download links.
+Building locally does not deploy the site.
 
-## Signing and verification
+## Preview verification
 
-- macOS: release build for ARM64, with a minimum executable deployment target of macOS 11.0. The bundle is ad hoc signed; it is **not Developer ID signed or notarized**. Its signature and the DMG/ZIP integrity were checked. Downloaded copies may be blocked by Gatekeeper; an ad hoc signature does not provide public distribution trust. Intel Macs are not supported by this artifact.
-- Windows: release build cross-compiled for `x86_64-pc-windows-msvc`, packaged with NSIS. The installer is **not Authenticode signed** and has **not been installed or run on a Windows machine**. SmartScreen may warn about the unknown publisher. Microsoft Edge WebView2 is required; the installer can download it when absent, so that setup needs internet access.
-- Frontend build and all seven UI unit tests passed. Compile/package checks are not a substitute for testing installation and the native workflows on each supported operating system.
-- The build inputs are source files and generated frontend assets. Local workspaces, runtime databases, logs, credentials, and screenshot references are not packaged as resources.
+macOS ARM64 previews are ad hoc signed and not Developer ID signed or notarized.
+Windows x64 installers are unsigned and Windows installation/runtime testing is
+pending. Check each version's build manifest for actual architecture, size,
+checksums, source revision, working-tree fingerprint, and verification results.
+Those checks do not imply Windows runtime or installed-app upgrade verification.
+Local background removal requires macOS 13.3 or later; an Intel Mac installer is
+not included. Provider models and ONNX runtime downloads are optional and separate
+from the installer. User workspaces and vault keys are not packaged.
 
-## Build commands
-
-macOS (native Apple Silicon):
-
-```sh
-npm run tauri -- build --bundles app,dmg --config src-tauri/tauri.macos.dev.conf.json
-```
-
-Windows cross-compilation from this Mac uses Rust's `x86_64-pc-windows-msvc` target, `cargo-xwin`, LLVM/LLD, and NSIS:
-
-```sh
-npm run tauri -- build --runner cargo-xwin --target x86_64-pc-windows-msvc --bundles nsis
-```
-
-The cross-compilation tools used for this build are in `/private/tmp/thoock-cross-tools`, and the downloaded Windows SDK cache is in `/private/tmp/thoock-windows-sdk`. Those are temporary machine-local build tools, not installer contents. The base desktop source remains in the sibling `thoock-desktop-app` project.
+See [release operations](docs/DESKTOP_RELEASES.md) for building and staging future
+versions. Keep a compatible workspace backup before changing app versions;
+installing an older binary does not roll back migrated workspace data.
