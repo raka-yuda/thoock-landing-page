@@ -15,7 +15,7 @@ import KeyIcon from 'lucide-react/dist/esm/icons/key-round.mjs';
 import ShieldCheckIcon from 'lucide-react/dist/esm/icons/shield-check.mjs';
 import WindowsLogoIcon from 'lucide-react/dist/esm/icons/panels-top-left.mjs';
 import AppleLogoIcon from 'lucide-react/dist/esm/icons/laptop.mjs';
-import { preferredRelease, releases, formatFileSize } from '../releases';
+import { preferredRelease, releases, formatFileSize, checksumsUrl } from '../releases';
 import { latestUpdate, formatUpdateDate } from '../changelog';
 import WindowFrame from '../components/WindowFrame';
 import FeatureShowcase from '../FeatureShowcase';
@@ -27,6 +27,7 @@ const questions = [
   ['Does it work offline?', 'Your local workspace tools do. Provider-backed research, image generation, and metadata requests need an internet connection and your configured credentials.'],
   ['Does it upload to Adobe Stock for me?', 'Thoock prepares the files and metadata. You review your package and upload it manually in Adobe Contributor Portal. Adobe decides whether to accept submissions.'],
   ['Where are my files and API keys stored?', 'Your workspace and images are stored locally. API keys are stored in the operating-system credential vault. Provider-backed actions send the relevant prompts or images to the service you configure.'],
+  ['How do I install or update Thoock?', 'Download the installer for your computer. On macOS, drag Thoock into Applications. Because this preview is not notarized, macOS may require you to allow it in System Settings → Privacy & Security. Windows may show an unknown-publisher or SmartScreen warning. Only proceed if you trust this download; managed computers may block it. To update, back up your workspace, close Thoock, and install the newer version. Your workspace is stored separately from the app.'],
   ['Which computers can run Thoock?', 'Release-preview downloads are available for Apple silicon Macs (ARM64) and 64-bit Windows (x64). The macOS build is ad hoc signed and not notarized. The Windows installer is unsigned and Windows runtime testing is pending. An Intel Mac build is not included.'],
 ];
 
@@ -61,7 +62,7 @@ function WorkspaceSection() {
     { icon: HardDrivesIcon, title: 'On your computer.', body: 'Your library, briefs, and export history live in a local workspace.' },
     { icon: KeyIcon, title: 'Your providers. Your keys.', body: 'Connect supported services. Credentials stay in your operating-system vault.' },
     { icon: ShieldCheckIcon, title: 'You’re in control.', body: 'Confirm requests before they run. Interrupted attempts are never silently repeated.' },
-    { icon: FolderSimpleIcon, title: 'Made to keep.', body: 'Back up, restore, or move your workspace as your library grows.' },
+    { icon: FolderSimpleIcon, title: 'Made to keep.', body: 'Back up, restore, or move your workspace. Recover deleted work from Trash.' },
   ];
   return <section className="workspace-section" id="workspace"><div className="container workspace-grid"><div className="workspace-copy"><span className="section-kicker"><DesktopIcon size={17} /> A desktop app, through and through</span><h2>Your workspace<br /> stays with you.</h2><p className="section-intro">A little less cloud. A little more yours.<br /> Keep the work close and the process organized.</p><div className="benefits">{benefits.map(item => <div className="benefit" key={item.title}><span className="material-icon"><item.icon size={21} /></span><div><h3>{item.title}</h3><p>{item.body}</p></div></div>)}</div><p className="provider-note">Provider-backed actions send relevant prompts or images to your configured service. Provider usage is billed separately.</p></div><div className="workspace-art"><div className="workspace-icon-tray" aria-hidden="true"><span><FolderSimpleIcon size={42} /></span><span className="tray-main"><img src="/thoock-icon.svg" width="90" height="90" alt="" /></span><span><ImageIcon size={42} /></span></div><WindowFrame title="Thoock / Your workspace"><img src="/screenshots/workspace.webp" srcSet="/screenshots/workspace-480.webp 480w, /screenshots/workspace-800.webp 800w, /screenshots/workspace.webp 1200w" sizes="(max-width: 767px) calc(100vw - 40px), 550px" alt="Thoock desktop settings with workspace and provider configuration using demo data." width="1200" height="860" loading="lazy" /></WindowFrame><div className="local-footnote"><ShieldCheckIcon size={16} /><span>Local files. OS-protected keys. Your workspace.</span></div></div></div></section>;
 }
@@ -74,7 +75,7 @@ function DownloadPanel() {
       <p className="platform-release-note">{release.note}</p>
       {release.alternativeUrl && <a className="alternative-download" href={release.alternativeUrl} download={release.alternativeUrl.split('/').pop()}>Download ZIP instead <ArrowDownIcon size={12} /></a>}
     </div>;
-  })}<a className="checksums-link" href="/downloads/SHA256SUMS.txt">View SHA-256 checksums <ArrowUpRightIcon size={12} /></a><p className="cost-note"><KeyIcon size={14} /> Bring your own API keys. Provider usage may incur charges.</p></div></div></section>;
+  })}<a className="checksums-link" href={checksumsUrl}>View SHA-256 checksums <ArrowUpRightIcon size={12} /></a><a className="checksums-link" href="/changelog/#previous-releases">Previous versions <ArrowUpRightIcon size={12} /></a><p className="cost-note"><KeyIcon size={14} /> Bring your own API keys. Provider usage may incur charges.</p></div></div></section>;
 }
 
 function FAQ() {
