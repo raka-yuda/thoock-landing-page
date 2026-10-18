@@ -1,3 +1,4 @@
+import { downloadAnalytics } from '../analytics';
 import { useEffect, useState } from 'react';
 import ArrowDownIcon from 'lucide-react/dist/esm/icons/arrow-down.mjs';
 import ArrowDownRightIcon from 'lucide-react/dist/esm/icons/arrow-down-right.mjs';
@@ -43,7 +44,7 @@ function Hero() {
     <div className="hero-copy"><div className="app-emblem"><img src="/thoock-icon.svg" alt="" width="76" height="76" /></div>
       <h1 id="hero-title">Your stock-image workflow.<br /> <span>All together.</span></h1>
       <p>Research ideas, write briefs, generate images, and prepare Adobe Stock packages. One desktop workspace, from start to finish.</p>
-      <div className="hero-actions"><a className="button primary large" href={release?.url ?? '#download'} download={release ? release.url.split('/').pop() : undefined}><DownloadSimpleIcon size={20} />{release ? `Download for ${release.platform}` : mobile ? 'View desktop downloads' : 'View download options'}</a><a className="text-link" href="#workflow">Explore the workflow <ArrowDownIcon size={16} /></a></div>
+      <div className="hero-actions"><a className="button primary large" {...(release ? downloadAnalytics(release, 'hero') : {})} href={release?.url ?? '#download'} download={release ? release.url.split('/').pop() : undefined}><DownloadSimpleIcon size={20} />{release ? `Download for ${release.platform}` : mobile ? 'View desktop downloads' : 'View download options'}</a><a className="text-link" href="#workflow">Explore the workflow <ArrowDownIcon size={16} /></a></div>
       <p className="hero-note">Local workspace. Your own API keys. No Thoock account.<span className="hero-release-info">{release ? `v${release.version} release preview for ${release.architecture}` : `v${latestUpdate.version} release preview for macOS and Windows`}</span></p>
     </div>
     <div className="hero-scene">
@@ -71,9 +72,9 @@ function DownloadPanel() {
   return <section className="section container download-section" id="download" aria-labelledby="download-title"><div className="download-panel"><div className="download-copy"><div className="download-emblem"><img src="/thoock-icon.svg" width="72" height="72" alt="" /></div><h2 id="download-title">Make room for<br /> your next batch.</h2><p>Bring your stock-image production<br className="desktop-break" /> into one desktop workspace.</p><span className="download-detail"><CheckIcon size={15} /> No Thoock account needed</span><a className="latest-update-link" href="/changelog/">Latest update: v{latestUpdate.version}<span>Updated {formatUpdateDate(latestUpdate.date)} <ArrowUpRightIcon size={12} /></span></a></div><div className="platforms">{releases.map(release => {
     const Logo = release.platform === 'macOS' ? AppleLogoIcon : WindowsLogoIcon;
     return <div className="platform" key={release.platform}><span className="platform-logo"><Logo size={27} /></span><div className="platform-info"><h3>Thoock for {release.platform}</h3><p>{release.architecture} / v{release.version} / {formatFileSize(release.bytes)}</p></div>
-      {release.available ? <a className="button primary platform-download" href={release.url} download={release.url.split('/').pop()}><DownloadSimpleIcon size={16} />Download for {release.platform}</a> : <span className="unavailable">Download not available yet</span>}
+      {release.available ? <a className="button primary platform-download" {...downloadAnalytics(release, 'downloads')} href={release.url} download={release.url.split('/').pop()}><DownloadSimpleIcon size={16} />Download for {release.platform}</a> : <span className="unavailable">Download not available yet</span>}
       <p className="platform-release-note">{release.note}</p>
-      {release.alternativeUrl && <a className="alternative-download" href={release.alternativeUrl} download={release.alternativeUrl.split('/').pop()}>Download ZIP instead <ArrowDownIcon size={12} /></a>}
+      {release.alternativeUrl && <a className="alternative-download" {...downloadAnalytics(release, 'downloads', release.alternativeUrl)} href={release.alternativeUrl} download={release.alternativeUrl.split('/').pop()}>Download ZIP instead <ArrowDownIcon size={12} /></a>}
     </div>;
   })}<a className="checksums-link" href={checksumsUrl}>View SHA-256 checksums <ArrowUpRightIcon size={12} /></a><a className="checksums-link" href="/changelog/#previous-releases">Previous versions <ArrowUpRightIcon size={12} /></a><p className="cost-note"><KeyIcon size={14} /> Bring your own API keys. Provider usage may incur charges.</p></div></div></section>;
 }

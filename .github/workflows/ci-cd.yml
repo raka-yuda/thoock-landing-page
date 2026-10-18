@@ -64,7 +64,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Build image
-        run: docker build -t thoock-landing-page:${{ github.sha }} .
+        env:
+          VITE_UMAMI_SCRIPT_URL: ${{ secrets.UMAMI_SCRIPT_URL }}
+          VITE_UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
+        run: |
+          docker build \
+            --build-arg VITE_UMAMI_SCRIPT_URL="$VITE_UMAMI_SCRIPT_URL" \
+            --build-arg VITE_UMAMI_WEBSITE_ID="$VITE_UMAMI_WEBSITE_ID" \
+            -t thoock-landing-page:${{ github.sha }} .
       - name: Check production routes and downloads
         shell: bash
         run: |
