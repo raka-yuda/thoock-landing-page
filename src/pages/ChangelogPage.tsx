@@ -1,3 +1,4 @@
+import { downloadAnalytics } from '../analytics';
 import ArrowRightIcon from 'lucide-react/dist/esm/icons/arrow-right.mjs';
 import CheckCircleIcon from 'lucide-react/dist/esm/icons/circle-check.mjs';
 import { changelog, formatUpdateDate } from '../changelog';
@@ -20,8 +21,8 @@ export default function ChangelogPage() {
         <section className="release-improvements"><h3>Also in this update</h3><ul>{entry.details.map(detail => <li key={detail}>{detail}</li>)}</ul></section>
         <div className="release-availability"><span className="build-label">{entry.status}</span><p>{entry.availability}</p><div className="release-downloads" aria-label={`Downloads for version ${entry.version}`}>
           {releaseHistory.find(release => release.version === entry.version)?.downloads.map(download => <div className="release-download" key={download.platform}>
-            <a className="text-link" href={download.url} download={download.url.split('/').pop()}>{download.platform} · {download.architecture} · {formatFileSize(download.bytes)} <ArrowRightIcon size={14} /></a>
-            {download.alternativeUrl && <a className="text-link" href={download.alternativeUrl} download={download.alternativeUrl.split('/').pop()}>macOS ZIP <ArrowRightIcon size={14} /></a>}
+            <a className="text-link" {...downloadAnalytics(download, 'changelog')} href={download.url} download={download.url.split('/').pop()}>{download.platform} · {download.architecture} · {formatFileSize(download.bytes)} <ArrowRightIcon size={14} /></a>
+            {download.alternativeUrl && <a className="text-link" {...downloadAnalytics(download, 'changelog', download.alternativeUrl)} href={download.alternativeUrl} download={download.alternativeUrl.split('/').pop()}>macOS ZIP <ArrowRightIcon size={14} /></a>}
           </div>)}
           <a className="text-link" href={`/downloads/${entry.version}/SHA256SUMS.txt`}>SHA-256 checksums <ArrowRightIcon size={14} /></a>
         </div></div>
