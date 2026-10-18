@@ -1,9 +1,34 @@
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
+function umamiAnalytics(): Plugin {
+  let settings: { scriptUrl: string; websiteId: string } | null = null;
+  return {
+    name: 'thoock-umami',
+    apply: 'build',
+    configResolved(config) {
+      const scriptUrl = config.env.VITE_UMAMI_SCRIPT_URL?.trim();
+      const websiteId = config.env.VITE_UMAMI_WEBSITE_ID?.trim();
+      if (Boolean(scriptUrl) !== Boolean(websiteId)) throw new Error('Set both VITE_UMAMI_SCRIPT_URL and VITE_UMAMI_WEBSITE_ID, or leave both empty.');
+      if (scriptUrl && (new URL(scriptUrl).protocol !== 'https:' || !/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(websiteId))) {
+        throw new Error('Umami requires an HTTPS script URL and a valid website UUID.');
+      }
+      settings = scriptUrl && websiteId ? { scriptUrl, websiteId } : null;
+    },
+    transformIndexHtml() {
+      if (!settings) return;
+      return [{ tag: 'script', injectTo: 'head', attrs: {
+        defer: true, src: settings.scriptUrl, 'data-website-id': settings.websiteId,
+        'data-domains': 'thoock.ryuda.me', 'data-exclude-hash': 'true',
+      } }];
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
+    umamiAnalytics(),
     react(),
     {
       name: 'thoock-release-data',

@@ -100,3 +100,11 @@ CI uploads its tested Docker image, transfers it over SSH, and starts that exact
 ## Versioned desktop releases
 
 Installers and their provenance live under `public/downloads/<version>/`. The archive index is `public/releases/index.json`; the homepage and optional desktop update checker use `public/releases/latest.json`. Previous installers remain available from the changelog, and original flat v0.1.0 download links remain valid. Deploy the whole `dist/` to retain all versions. See [release operations](docs/DESKTOP_RELEASES.md).
+
+## Umami analytics
+
+Use the same Umami instance as the portfolio, with a separate website for `thoock.ryuda.me`. Copy `.env.example` to `.env.production` and set `VITE_UMAMI_SCRIPT_URL` and `VITE_UMAMI_WEBSITE_ID` before building. Leave both empty to disable analytics. The deferred tracker is included on both production pages, with tracking restricted to `thoock.ryuda.me`; development visits are excluded. Hash-only navigation does not create extra pageviews.
+
+For GitHub Actions/Docker deployment, set repository secrets `UMAMI_SCRIPT_URL` and `UMAMI_WEBSITE_ID`, matching the portfolio’s secret names, then rebuild/deploy. These are public tracking settings, not Umami login credentials. Docker passes them into Vite at build time; setting container runtime environment variables alone cannot change a static site.
+
+In Umami, open **Events → desktop-download**. This uses [Umami’s native event attributes](https://docs.umami.is/docs/track-events). Properties include a readable `title`, `platform`, `architecture`, `version`, `format`, `source` (`hero`, `downloads`, or `changelog`), and `file`. Primary installers, ZIP alternatives, and historical versions are labelled. Navigation to the download section and checksum links do not count as installer downloads. Counts measure clicks that start downloads, not completed transfers or unique app installations. Titles also appear on link hover.
