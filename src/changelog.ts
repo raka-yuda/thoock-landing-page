@@ -2,6 +2,25 @@
 // Source: thoock-desktop-app/package.json and docs/IMPLEMENTATION_STATUS.md.
 export const changelog = [
   {
+    version: '0.2.1',
+    date: '2026-10-18',
+    status: 'Release preview',
+    title: 'A fix for Windows model downloads.',
+    summary: 'Correct the disk-space check that could stop background-removal setup while moving from the model download to its runtime download.',
+    highlights: [
+      { label: 'Download the runtime', text: 'Windows now checks free space using the destination folder instead of the existing temporary archive file.' },
+      { label: 'Keep your download', text: 'Successfully downloaded model files are verified and reused when you retry setup after updating.' },
+      { label: 'Clearer failure details', text: 'If the destination folder cannot be queried, the error identifies the disk-space check and includes the Windows system error number.' },
+    ],
+    details: [
+      'Regression coverage reproduces the original generic file-operation error and checks existing archive destinations.',
+      'The correction also applies to other operations that check space for an existing destination file.',
+      'Low-space reserves and download integrity checks remain in place.',
+      'Both macOS and Windows installers use v0.2.1. The download fix affects Windows; macOS was rebuilt to keep platform versions aligned.',
+    ],
+    availability: 'Close Thoock, install this preview over the previous version, then retry setup in Settings → Image tools. Workspace data and valid model downloads stay on the device. Windows installation and runtime verification remain pending.',
+  },
+  {
     version: '0.2.0',
     date: '2026-10-18',
     status: 'Release preview',

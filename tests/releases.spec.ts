@@ -19,8 +19,11 @@ test('changelog preserves downloads for every archived release', async ({ page }
   const base = 'http://127.0.0.1:4173';
   const response = await page.request.get(`${base}/releases/index.json`);
   const index = await response.json();
-  expect(index.latestVersion).toBe('0.2.0');
-  expect(index.versions).toEqual(['0.2.0', '0.1.0']);
+  const latest = await (await page.request.get(`${base}/releases/latest.json`)).json();
+  expect(index.latestVersion).toBe(latest.version);
+  expect(index.versions[0]).toBe(latest.version);
+  expect(index.versions).toContain('0.2.0');
+  expect(index.versions).toContain('0.1.0');
   await page.goto(`${base}/changelog/`);
   for (const version of index.versions) {
     const manifest = await (await page.request.get(`${base}/releases/${version}.json`)).json();

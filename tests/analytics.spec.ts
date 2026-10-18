@@ -4,7 +4,7 @@ const production = 'http://127.0.0.1:4173';
 
 test('prerendered installer links carry readable titles and release properties without JavaScript', async ({ browser }) => {
   const page = await browser.newPage({ javaScriptEnabled: false });
-  for (const [path, count, source] of [['/', 3, 'downloads'], ['/changelog/', 6, 'changelog']] as const) {
+  for (const [path, count, source] of [['/', 3, 'downloads'], ['/changelog/', 9, 'changelog']] as const) {
     await page.goto(`${production}${path}`);
     const links = page.locator('a[data-umami-event="desktop-download"]');
     await expect(links).toHaveCount(count);
@@ -65,8 +65,8 @@ test('tracking configuration is optional and included once on each production pa
     }
   }
   // The download works even if the tracker is absent or blocked.
-  const link = page.locator('[id="v0.2.0"] a[download]').first();
+  const link = page.locator('[id="v0.2.1"] a[download]').first();
   const pending = page.waitForEvent('download');
   await link.click();
-  expect((await pending).suggestedFilename()).toMatch(/^Thoock_0\.2\.0_/);
+  expect((await pending).suggestedFilename()).toMatch(/^Thoock_0\.2\.1_/);
 });
