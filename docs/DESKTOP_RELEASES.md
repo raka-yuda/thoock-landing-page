@@ -13,6 +13,20 @@ Versioned manifests live at `public/releases/<version>.json`; the ordered
 provenance. The homepage shows the latest version; the changelog provides older
 version downloads. The original flat 0.1.0 installer URLs are preserved unchanged.
 
+## Shared platform version
+
+Thoock uses one app version for Apple silicon macOS and Windows x64. Build both
+platforms for each feature or patch release, including a platform-specific hotfix.
+Release notes identify which platform receives the behavior fix. For 0.2.1 the
+user-facing fix concerns Windows background-removal downloads; macOS was rebuilt
+with the same version. The staging checks inspect the actual executable versions;
+renaming an older installer is not a version update.
+
+Keep installer bytes and recorded hashes unchanged after staging. Editorial
+release-note clarifications must stay synchronized between the version's notes
+file, its release manifest, the latest alias when applicable, and the changelog.
+They do not require rebuilding or replacing unchanged installers.
+
 ## Prepare a release locally
 
 1. Finish the desktop changes and choose a new version. Set the same value in
