@@ -17,7 +17,7 @@ Browser tests use installed Google Chrome. The production site is static and bui
 
 ## Releases
 
-Installers live in `public/downloads/` and are copied into the production build. `public/releases/latest.json` (read by `src/releases.ts`) points to the supplied v0.2.0 macOS ARM64 DMG (with ZIP alternative) and Windows x64 setup executable. The hero selects the operating-system family; architecture, preview status, and file sizes remain visible. Mobile visitors see the desktop download options. All installer links use the download attribute.
+Installers live in `public/downloads/` and are copied into the production build. `public/releases/latest.json` (read by `src/releases.ts`) points to the supplied v0.2.1 macOS ARM64 DMG (with ZIP alternative) and Windows x64 setup executable. The hero selects the operating-system family; architecture, preview status, and file sizes remain visible. Mobile visitors see the desktop download options. All installer links use the download attribute.
 
 The latest `build-manifest.json` records file sizes, SHA-256 hashes, build provenance, and verification status. `SHA256SUMS.txt` is linked in the download panel. Stage releases with `npm run release:stage`; `npm run release:check` verifies every archived installer. See [release operations](docs/DESKTOP_RELEASES.md). The current macOS preview is ad hoc signed and not notarized; Windows is unsigned and runtime testing is pending. Minimum supported OS versions are not advertised without verified runtime support. If publishing multiple CPU architectures, add explicit labeled choices.
 
