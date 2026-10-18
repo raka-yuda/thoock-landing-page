@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "version": "0.2.1",
+  "notes": "Thoock 0.2.1 \u2014 Windows background-removal download fix\n\nBoth macOS (Apple silicon) and Windows (x64) installers use version 0.2.1. The user-facing fix addresses Windows background-removal downloads; macOS was rebuilt to keep the release versions aligned.\n\n- Fix the Windows free-space check for existing destination files. The model runtime download creates a temporary archive before checking disk space; the check now queries the containing folder as required by Windows.\n- This resolves the generic file-operation error when installation moves from the model download to the ONNX runtime download, and protects other operations that check space for existing files.\n- Report a specific disk-space-check error with the Windows system error number if the destination folder cannot be queried.\n- Add regression coverage for existing temporary archive paths and the native free-space preflight. The native suite passed on macOS ARM64 (76 passed, 2 optional tests skipped). The full Windows installation flow still needs verification on Windows.\n\nClose Thoock and install 0.2.1 over the previous version, then retry the model download from Settings \u2192 Image tools. A successfully downloaded and verified model file is retained and reused. Your workspace, keys, and preferences remain separate from the installer.\n\nApple silicon macOS and Windows x64 preview installers. macOS is ad hoc signed and not notarized; Windows is unsigned. Background removal requires macOS 13.3 or later. Older installers remain archived; returning to an older installer does not roll back workspace data.\n",
+  "notesUrl": "/changelog/",
+  "downloads": {
+    "darwin-aarch64": {
+      "platform": "macOS",
+      "architecture": "Apple silicon (ARM64)",
+      "url": "/downloads/0.2.1/Thoock_0.2.1_macos_arm64.dmg",
+      "bytes": 5633689,
+      "sha256": "6cd7a905b5bc4ed609f718d313fcd853b6887e650904f297d0f6e134e55ad452",
+      "note": "Release preview. Ad hoc signed; not notarized. Apple silicon. Background removal requires macOS 13.3 or later.",
+      "alternativeUrl": "/downloads/0.2.1/Thoock_0.2.1_macos_arm64.zip"
+    },
+    "windows-x86_64": {
+      "platform": "Windows",
+      "architecture": "64-bit (x64)",
+      "url": "/downloads/0.2.1/Thoock_0.2.1_windows_x64_setup.exe",
+      "bytes": 4540470,
+      "sha256": "5cdcad64e67ec1124f3f9b0d4ee29474f41b5c3ae81de38c439e6541e8ec7d51",
+      "note": "Release preview. Unsigned installer; Windows runtime testing is pending."
+    }
+  }
+}

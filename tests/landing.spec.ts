@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { latestUpdate } from '../src/changelog';
+const currentRelease = async () => JSON.parse(await readFile('public/releases/latest.json', 'utf8'));
 
 test('feature board presents features and opens real screenshots', async ({ page }) => {
   await page.goto('/');
@@ -74,7 +76,7 @@ test('changelog is a separate page with working navigation and version permalink
   await page.goto('/');
   await expect(page.locator('.release-history')).toHaveCount(0);
   const latest = page.locator('#download .latest-update-link');
-  await expect(latest).toContainText('v0.2.0');
+  await expect(latest).toContainText(`v${latestUpdate.version}`);
   await expect(latest).toHaveAttribute('href', '/changelog/');
   await page.getByRole('navigation', {name:'Main navigation'}).getByRole('link', {name:'Changelog'}).click();
   await expect(page).toHaveURL(/\/changelog\/?$/);
@@ -83,7 +85,7 @@ test('changelog is a separate page with working navigation and version permalink
   const history = page.locator('.release-history');
   await expect(history.getByText('v0.1.0', {exact:true})).toBeVisible();
   await expect(history.getByText('Latest update', {exact:true})).toBeVisible();
-  await expect(history.locator('time').first()).toHaveAttribute('datetime', '2026-10-18');
+  await expect(history.locator('time').first()).toHaveAttribute('datetime', latestUpdate.date);
   await expect(history.getByText('Release preview', {exact:true}).first()).toBeVisible();
   await expect(history.getByRole('heading', {name:'Also in this update'}).first()).toBeVisible();
   await page.getByRole('link', {name:'Link to version 0.1.0'}).click();
@@ -158,9 +160,10 @@ test('installer links download the exact artifacts from the supplied manifest',a
 });
 
 test('hero offers the matching desktop installer and keeps mobile on download options',async({browser})=>{
+  const manifest = await currentRelease();
   for(const [userAgent,label,href] of [
-    ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)','Download for macOS','/downloads/0.2.0/Thoock_0.2.0_macos_arm64.dmg'],
-    ['Mozilla/5.0 (Windows NT 10.0; Win64; x64)','Download for Windows','/downloads/0.2.0/Thoock_0.2.0_windows_x64_setup.exe'],
+    ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)','Download for macOS',manifest.downloads['darwin-aarch64'].url],
+    ['Mozilla/5.0 (Windows NT 10.0; Win64; x64)','Download for Windows',(await currentRelease()).downloads['windows-x86_64'].url],
     ['Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)','View desktop downloads','#download'],
   ]) {
     const page=await browser.newPage({userAgent,reducedMotion:'reduce'});
@@ -209,7 +212,7 @@ test('hydration keeps dark appearance and platform downloads without recoverable
   await page.getByRole('button',{name:'Switch to light appearance'}).click();
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
-  await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href','/downloads/0.2.0/Thoock_0.2.0_windows_x64_setup.exe');
+  await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href',(await currentRelease()).downloads['windows-x86_64'].url);
   expect(errors).toEqual([]);
   await page.close();
 });
