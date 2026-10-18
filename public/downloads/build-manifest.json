@@ -1,11 +1,11 @@
 {
   "product": "Thoock",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "buildType": "release-preview",
-  "builtAt": "2026-10-18T07:52:56.212Z",
+  "builtAt": "2026-10-18T09:30:58.822Z",
   "sourceRevision": "74dd9f9fc4d7c8c9145ef926b8d2bf5ca9b6b6e6",
   "sourceHasUncommittedChanges": true,
-  "sourceSnapshotSha256": "c9e92b9a7a0fa0765c01361e7f91ad909ee8f45be0afbeec837db5add86ba3f3",
+  "sourceSnapshotSha256": "fa14cae28643101020f13a6a49f040a4fd79698d82a82056d6bcb6f30b922915",
   "verification": {
     "frontendBuild": true,
     "uiUnitTestsPassed": 9,
@@ -26,31 +26,31 @@
   },
   "artifacts": [
     {
-      "filename": "Thoock_0.2.1_macos_arm64.dmg",
-      "url": "/downloads/0.2.1/Thoock_0.2.1_macos_arm64.dmg",
+      "filename": "Thoock_0.2.2_macos_arm64.dmg",
+      "url": "/downloads/0.2.2/Thoock_0.2.2_macos_arm64.dmg",
       "platform": "macOS",
       "architecture": "arm64",
       "format": "dmg",
-      "bytes": 5633689,
-      "sha256": "6cd7a905b5bc4ed609f718d313fcd853b6887e650904f297d0f6e134e55ad452"
+      "bytes": 6073361,
+      "sha256": "9438e00cb38d5edf2bce0b5c54fb06e11c3c7c5531617c9c41204f28890c8f51"
     },
     {
-      "filename": "Thoock_0.2.1_macos_arm64.zip",
-      "url": "/downloads/0.2.1/Thoock_0.2.1_macos_arm64.zip",
+      "filename": "Thoock_0.2.2_macos_arm64.zip",
+      "url": "/downloads/0.2.2/Thoock_0.2.2_macos_arm64.zip",
       "platform": "macOS",
       "architecture": "arm64",
       "format": "zip",
-      "bytes": 5569465,
-      "sha256": "c971e49fe059b0ee037490c42b60bb06c6277907722749fc3b35a5563b4144d3"
+      "bytes": 6011168,
+      "sha256": "645eb48c934ad42ece3fc064f3018ae92f1b7659bf5c09fb2dcfff1194ca6913"
     },
     {
-      "filename": "Thoock_0.2.1_windows_x64_setup.exe",
-      "url": "/downloads/0.2.1/Thoock_0.2.1_windows_x64_setup.exe",
+      "filename": "Thoock_0.2.2_windows_x64_setup.exe",
+      "url": "/downloads/0.2.2/Thoock_0.2.2_windows_x64_setup.exe",
       "platform": "Windows",
       "architecture": "x64",
       "format": "nsis",
-      "bytes": 4540470,
-      "sha256": "5cdcad64e67ec1124f3f9b0d4ee29474f41b5c3ae81de38c439e6541e8ec7d51"
+      "bytes": 4540209,
+      "sha256": "333ebad4d2621c9522608f0b23277912c9cb2ad989f509480b2d463135316999"
     }
   ]
 }

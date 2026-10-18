@@ -4,7 +4,12 @@ const production = 'http://127.0.0.1:4173';
 
 test('prerendered installer links carry readable titles and release properties without JavaScript', async ({ browser }) => {
   const page = await browser.newPage({ javaScriptEnabled: false });
-  for (const [path, count, source] of [['/', 3, 'downloads'], ['/changelog/', 9, 'changelog']] as const) {
+  const index = await (await page.request.get(`${production}/releases/index.json`)).json();
+  const latest = await (await page.request.get(`${production}/releases/latest.json`)).json();
+  const archives = await Promise.all(index.versions.map(async (version: string) => (await page.request.get(`${production}/releases/${version}.json`)).json()));
+  const countDownloads = (manifest: { downloads: Record<string, { alternativeUrl?: string }> }) => Object.values(manifest.downloads).reduce((count, download) => count + 1 + Number(Boolean(download.alternativeUrl)), 0);
+  const archiveCount = archives.reduce((count, manifest) => count + countDownloads(manifest), 0);
+  for (const [path, count, source] of [['/', countDownloads(latest), 'downloads'], ['/changelog/', archiveCount, 'changelog']] as const) {
     await page.goto(`${production}${path}`);
     const links = page.locator('a[data-umami-event="desktop-download"]');
     await expect(links).toHaveCount(count);
@@ -65,8 +70,9 @@ test('tracking configuration is optional and included once on each production pa
     }
   }
   // The download works even if the tracker is absent or blocked.
-  const link = page.locator('[id="v0.2.1"] a[download]').first();
+  const link = page.locator('.release-entry').first().locator('a[download]').first();
+  const filename = await link.getAttribute('download');
   const pending = page.waitForEvent('download');
   await link.click();
-  expect((await pending).suggestedFilename()).toMatch(/^Thoock_0\.2\.1_/);
+  expect((await pending).suggestedFilename()).toBe(filename);
 });

@@ -2,6 +2,25 @@
 // Source: thoock-desktop-app/package.json and docs/IMPLEMENTATION_STATUS.md.
 export const changelog = [
   {
+    version: '0.2.2',
+    date: '2026-10-18',
+    status: 'Release preview',
+    title: 'A safer finish for runtime downloads.',
+    summary: 'Address a second Windows background-removal setup failure when saving the runtime after the download finishes.',
+    highlights: [
+      { label: 'Avoid the file conflict', text: 'Runtime downloads now save to a fresh path instead of replacing a temporary archive that setup still holds open.' },
+      { label: 'Retry without starting over', text: 'Already verified model files stay available, and failed runtime staging files are cleaned up.' },
+      { label: 'Useful error details', text: 'Save failures include the system error number and error kind without exposing private file paths.' },
+    ],
+    details: [
+      'Size and SHA-256 verification still run before runtime extraction.',
+      'Regression checks cover the runtime destination contract, actual verified saving, download failures, cleanup, and safe error diagnostics.',
+      'Both macOS and Windows installers use v0.2.2; macOS was rebuilt to keep platform versions aligned.',
+      'The Windows download and installation flow still needs verification on Windows; host regression tests do not establish end-to-end Windows success.',
+    ],
+    availability: 'Close Thoock, install this preview over the previous version, then retry setup in Settings → Image tools. A valid model download can be reused. If saving still fails, report the error kind and system error number.',
+  },
+  {
     version: '0.2.1',
     date: '2026-10-18',
     status: 'Release preview',
