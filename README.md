@@ -112,7 +112,7 @@ In Umami, open **Events → desktop-download**. This uses [Umami’s native even
 
 ### Beta version labels
 
-The homepage shows one **Beta** badge beside the header logo for `0.x.x`, hiding it at major `1` and above. Homepage version labels remain numeric. Changelog entries retain their individual release badges. Keep numeric release versions, filenames, manifests, and update ordering unchanged. Previous installers remain archived.
+Both pages show one **Beta** badge beside the header logo for `0.x.x`, hiding it at major `1` and above. Homepage version labels remain numeric. Changelog entries retain their individual release badges. Keep numeric release versions, filenames, manifests, and update ordering unchanged. Previous installers remain archived.
 
 ## Videos
 

@@ -27,6 +27,7 @@ test('changelog preserves downloads for every archived release', async ({ page }
   expect(index.versions).toContain('0.2.0');
   expect(index.versions).toContain('0.1.0');
   await page.goto(`${base}/changelog/`);
+  await expect(page.locator('.header-brand .beta-badge')).toHaveCount(latest.version.split('.')[0] === '0' ? 1 : 0);
   for (const version of index.versions) {
     const manifest = await (await page.request.get(`${base}/releases/${version}.json`)).json();
     const entry = page.locator(`[id="v${version}"]`);

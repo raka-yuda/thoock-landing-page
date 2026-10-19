@@ -19,7 +19,7 @@ function ThemeToggle() {
 }
 
 function Header({ changelogPage = false }: { changelogPage?: boolean }) {
-  return <header className="header"><div className="header-inner"><div className="header-brand"><Brand />{!changelogPage && <BetaBadge version={latestUpdate.version} />}</div><nav aria-label="Main navigation"><a href="/#workflow">Workflow</a><a href="/#workspace">Your workspace</a><a href="/changelog/" aria-current={changelogPage ? 'page' : undefined}>Changelog</a><a href="/#faq">FAQ</a></nav><div className="header-actions"><ThemeToggle /><a className="button primary nav-download" aria-label="Download Thoock" href="/#download"><DownloadSimpleIcon size={17} /><span className="nav-download-label">Download<span className="nav-download-name"> Thoock</span></span></a></div></div></header>;
+  return <header className="header"><div className="header-inner"><div className="header-brand"><Brand /><BetaBadge version={latestUpdate.version} /></div><nav aria-label="Main navigation"><a href="/#workflow">Workflow</a><a href="/#workspace">Your workspace</a><a href="/changelog/" aria-current={changelogPage ? 'page' : undefined}>Changelog</a><a href="/#faq">FAQ</a></nav><div className="header-actions"><ThemeToggle /><a className="button primary nav-download" aria-label="Download Thoock" href="/#download"><DownloadSimpleIcon size={17} /><span className="nav-download-label">Download<span className="nav-download-name"> Thoock</span></span></a></div></div></header>;
 }
 
 function Footer() {
