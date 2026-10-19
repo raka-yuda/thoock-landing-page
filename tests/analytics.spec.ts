@@ -17,8 +17,8 @@ test('prerendered installer links carry readable titles and release properties w
       const file = (await link.getAttribute('href'))!.split('/').pop()!;
       const version = file.match(/Thoock_([\d.]+)_/)![1];
       const format = file.split('.').pop()!.toUpperCase();
-      await expect(link).toHaveAttribute('title', new RegExp(`Thoock v${version}.*${format}`));
-      await expect(link).toHaveAttribute('data-umami-event-title', (await link.getAttribute('title'))!);
+      await expect(link).not.toHaveAttribute('title');
+      await expect(link).toHaveAttribute('data-umami-event-title', new RegExp(`Thoock v${version}.*${format}`));
       await expect(link).toHaveAttribute('data-umami-event-version', version);
       await expect(link).toHaveAttribute('data-umami-event-format', format);
       await expect(link).toHaveAttribute('data-umami-event-source', source);
