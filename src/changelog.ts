@@ -2,6 +2,25 @@
 // Source: thoock-desktop-app/package.json and docs/IMPLEMENTATION_STATUS.md.
 export const changelog = [
   {
+    version: '0.2.3',
+    date: '2026-10-19',
+    status: 'Beta',
+    title: 'Your workspace, from the moment you open Thoock.',
+    summary: 'The demo workspace is removed, and a clear Beta badge identifies releases below version 1.0.0.',
+    highlights: [
+      { label: 'Open your own workspace', text: 'The Demo data switch, sample workspace, and demo-only status labels are removed. Previously saved demo preferences no longer change which workspace opens.' },
+      { label: 'Know the release stage', text: 'A Beta badge appears beside version information in the app and on the website while the major version is zero.' },
+      { label: 'Keep your work', text: 'Existing workspace files, provider keys, preferences, and downloaded models stay on the device; no reset is needed.' },
+    ],
+    details: [
+      'Synthetic records and illustrations are used only by automated tests and no longer ship with the application.',
+      'Numeric versions and update ordering are unchanged; the Beta badge disappears at major version 1 and above.',
+      'Both macOS Apple silicon and Windows x64 installers use v0.2.3.',
+      'The background-removal download corrections from 0.2.1 and 0.2.2 are included; end-to-end Windows runtime verification remains pending.',
+    ],
+    availability: 'Close Thoock and install over your previous version. macOS is ad hoc signed and not notarized; Windows is unsigned. Older installers remain available, and update checks still use browser downloads with manual installation.',
+  },
+  {
     version: '0.2.2',
     date: '2026-10-18',
     status: 'Release preview',
