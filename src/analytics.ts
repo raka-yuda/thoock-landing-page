@@ -7,7 +7,6 @@ export function downloadAnalytics(release: Release, source: 'hero' | 'downloads'
   const format = file.split('.').pop()!.toUpperCase();
   const title = `Thoock v${release.version} — ${release.platform} · ${release.architecture} · ${format}`;
   return {
-    title,
     'data-umami-event': 'desktop-download',
     'data-umami-event-title': title,
     'data-umami-event-platform': release.platform,

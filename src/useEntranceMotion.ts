@@ -57,7 +57,7 @@ export function useEntranceMotion() {
             stagger = Math.min(stagger + 85, 255);
           }
         }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
-        document.querySelectorAll('.workflow-bridge, .feature-intro, .feature-card, .workspace-copy, .workspace-art, .download-panel, .faq-heading, .faq-items details, .footer-top, .release-entry, .changelog-end').forEach(element => observer?.observe(element));
+        document.querySelectorAll('.workflow-bridge, .feature-intro, .feature-card, .tutorial-heading, .tutorial-player, .workspace-copy, .workspace-art, .download-panel, .faq-heading, .faq-items details, .footer-top, .release-entry, .changelog-end').forEach(element => observer?.observe(element));
       }
     }
 

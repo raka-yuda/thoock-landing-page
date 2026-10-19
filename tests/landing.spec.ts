@@ -9,11 +9,11 @@ test('feature board presents features and opens real screenshots', async ({ page
   await page.locator('.feature-board').scrollIntoViewIfNeeded();
   await expect(page.locator('.feature-card')).toHaveCount(3);
   await expect(page.getByRole('tablist')).toHaveCount(0);
-  const enlarge = page.getByRole('button', {name:'Enlarge commercial brief screenshot'});
+  const enlarge = page.getByRole('button', {name:'Enlarge commercial briefs screenshot'});
   await enlarge.focus();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('dialog')).toBeVisible();
-  await expect(page.getByRole('dialog')).toContainText('Brief editor with a sanitized example.');
+  await expect(page.getByRole('dialog')).toContainText('Commercial briefs');
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).not.toBeVisible();
   await expect(enlarge).toBeFocused();
@@ -28,7 +28,7 @@ test('theme persists, FAQ opens, and preview downloads show their platform detai
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
   await page.getByText('Does it upload to Adobe Stock for me?',{exact:true}).click();
   await expect(page.locator('details[open]')).toContainText('upload it manually');
-  await page.getByRole('link',{name:'Download Thoock',exact:true}).click();
+  await page.locator('.nav-download').click();
   await expect(page).toHaveURL(/#download$/);
   await expect(page.locator('#download .platform-download')).toHaveCount(2);
   await expect(page.locator('#download .unavailable')).toHaveCount(0);
@@ -66,8 +66,8 @@ test('reduced motion and mobile platform visitors remain usable',async({page})=>
   await page.locator('.feature-board').scrollIntoViewIfNeeded();
   await expect(page.locator('#root')).toHaveAttribute('data-hydrated','true');
   await expect(page.locator('.feature-replay')).toHaveCount(0);
-  await expect(page.getByRole('heading',{name:'Generate possibilities. Keep the good ones.'})).toBeVisible();
-  await page.getByRole('link',{name:'Download Thoock',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Make the possibilities. Keep the ones that matter.'})).toBeVisible();
+  await page.locator('.nav-download').click();
   await expect(page.getByRole('heading',{name:'Make room for your next batch.'})).toBeVisible();
 });
 
@@ -94,7 +94,7 @@ test('changelog is a separate page with working navigation and version permalink
   await expect(history.getByText('Operating-system credential storage and redacted provider logs.')).toBeVisible();
   await page.getByRole('navigation').getByRole('link', {name:'Workflow', exact:true}).click();
   await expect(page).toHaveURL(/\/#workflow$/);
-  await expect(page.getByRole('heading', {name:'An idea is just the beginning. Give it somewhere to go.'})).toBeVisible();
+  await expect(page.getByRole('heading', {name:'One idea. Many possibilities. One place to bring it together.'})).toBeVisible();
   await page.goBack();
   await expect(page.getByRole('heading', {level:1})).toHaveText('What’s new.');
 });
@@ -125,12 +125,12 @@ test('page load is sequenced and scroll entrances play once, with live reduced-m
   await expect(page.locator('#root')).toHaveAttribute('data-prerendered','true');
   expect(await page.locator('.hero h1').evaluate(element=>getComputedStyle(element).animationName)).toBe('html-enter-painted');
   await expect(page.locator('.hero-actions .primary')).toBeVisible();
-  await page.locator('.feature-plan').scrollIntoViewIfNeeded();
-  await expect.poll(()=>page.locator('.feature-plan').evaluate(element=>element.getAnimations().some(animation=>animation.id==='scroll-entrance'))).toBe(true);
-  await expect.poll(()=>page.locator('.feature-plan').evaluate(element=>element.getAnimations().length)).toBe(0);
+  await page.locator('.story-planning').scrollIntoViewIfNeeded();
+  await expect.poll(()=>page.locator('.story-planning').evaluate(element=>element.getAnimations().some(animation=>animation.id==='scroll-entrance'))).toBe(true);
+  await expect.poll(()=>page.locator('.story-planning').evaluate(element=>element.getAnimations().length)).toBe(0);
   await page.locator('.hero').scrollIntoViewIfNeeded();
-  await page.locator('.feature-plan').scrollIntoViewIfNeeded();
-  expect(await page.locator('.feature-plan').evaluate(element=>element.getAnimations().length)).toBe(0);
+  await page.locator('.story-planning').scrollIntoViewIfNeeded();
+  expect(await page.locator('.story-planning').evaluate(element=>element.getAnimations().length)).toBe(0);
   await page.reload();
   await page.emulateMedia({reducedMotion:'reduce'});
   await expect.poll(()=>page.evaluate(()=>document.getAnimations().filter(animation=>animation.id.startsWith('page-entrance:') || animation.id==='scroll-entrance').length)).toBe(0);
@@ -266,7 +266,7 @@ test('appearance follows the system until overridden and synchronizes between ta
 test('screenshot previews expose their name and restore focus across repeated opens', async ({ page }) => {
   await page.goto('/');
   for (const [button, name] of [
-    ['Enlarge commercial brief screenshot', 'Commercial brief in Thoock'],
+    ['Enlarge commercial briefs screenshot', 'Commercial briefs in Thoock'],
     ['Enlarge image review screenshot', 'Image review in Thoock'],
   ]) {
     const trigger = page.getByRole('button', { name: button });
@@ -276,6 +276,28 @@ test('screenshot previews expose their name and restore focus across repeated op
     await expect(dialog.getByRole('img')).toHaveCount(1);
     await dialog.getByRole('button', { name: 'Close screenshot' }).click();
     await expect(dialog).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    await expect(page.locator('.image-dialog img')).toHaveCount(0);
+  }
+});
+
+test('three visual stories preserve whole windows and open detailed previews on demand', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const stories = page.locator('#workflow');
+  await expect(stories.locator('article')).toHaveCount(3);
+  await expect(stories.locator('.feature-preview')).toHaveCount(9);
+  await expect(stories.locator('.feature-preview-bar')).toHaveCount(0);
+  const words = (await stories.innerText()).trim().split(/\s+/).length;
+  expect(words).toBeLessThan(220);
+  for (const name of ['image generation', 'workspace dashboard', 'generation history', 'provider logs', 'ai-assisted research']) {
+    const trigger = stories.getByRole('button', { name: `Enlarge ${name} screenshot`, exact: true });
+    await trigger.click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('img')).toHaveAttribute('src', /-full\.webp$/);
+    await expect(dialog.getByRole('img')).toHaveJSProperty('complete', true);
+    await page.keyboard.press('Escape');
     await expect(trigger).toBeFocused();
     await expect(page.locator('.image-dialog img')).toHaveCount(0);
   }

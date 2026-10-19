@@ -1,0 +1,14 @@
+{
+  "thoock-tutorial": {
+    "file": "thoock-tutorial.mp4",
+    "sha256": "d23c9789f0361059f4234a87b9083cdd3e303c4dae56a9e7c4d7617c82bc096f"
+  },
+  "thoock-promo-vertical": {
+    "file": "thoock-promo-vertical.mp4",
+    "sha256": "cb38e5227084a48e84498e482ea35765af940d1d2b12f05b086933f8278b4a81"
+  },
+  "thoock-promo-landscape": {
+    "file": "thoock-promo-landscape.mp4",
+    "sha256": "07ebcc308befcfee1f57e3565592c67d9f4ce6a0f9170344fb4c6bffeff6aa28"
+  }
+}

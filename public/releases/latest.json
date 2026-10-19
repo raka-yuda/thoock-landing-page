@@ -1,24 +1,24 @@
 {
   "schemaVersion": 1,
-  "version": "0.2.2",
-  "notes": "Thoock 0.2.2 — Background-removal download save fix\n\nBoth macOS (Apple silicon) and Windows (x64) installers use version 0.2.2. This patch addresses a second failure at the end of the Windows background-removal runtime download, after the disk-space check corrected in 0.2.1.\n\n- Download the runtime into a fresh destination inside a temporary staging folder instead of replacing an archive file that the installer still holds open. This removes a Windows file-replacement conflict that can produce “Could not save the downloaded file” after downloading finishes.\n- Keep size and SHA-256 verification before saving or extracting the runtime. Clean staging files after success or failure and reuse an already verified model on retry.\n- Include a safe system error number and error kind if the final save still fails, without exposing local file paths.\n- Add regression coverage for the runtime destination contract, real verified file saving, failed-download cleanup, and safe save-error diagnostics. Native Windows installation and inference still need verification on Windows; host tests are not a substitute.\n\nClose Thoock and install 0.2.2 over the previous version, then retry the download from Settings → Image tools. You do not need to remove a successfully downloaded model first. If saving still fails, report the error kind and system error number shown in the message.\n\nApple silicon macOS and Windows x64 preview installers. macOS is ad hoc signed and not notarized; Windows is unsigned. Background removal requires macOS 13.3 or later. Workspace data, vault keys, preferences, and downloaded models remain separate from the installer. Older installers remain archived; returning to an older installer does not roll back workspace data.\n",
+  "version": "0.2.3",
+  "notes": "Thoock 0.2.3 — Local workspace and Beta labels\n\nBoth macOS (Apple silicon) and Windows (x64) installers use the numeric version 0.2.3. Thoock displays a Beta badge while its major version is below 1; the label does not change release identifiers or update ordering.\n\n- Remove the Demo data switch and sample workspace from the app. Thoock opens your local workspace directly, including on devices that previously saved a demo-mode preference.\n- Remove demo-only command interception, status labels, and sample illustrations from the shipped application. Synthetic records and artwork remain only in automated-test fixtures.\n- Show a Beta badge in the app header, About & updates, and website version displays for 0.x releases. The badge disappears automatically at major version 1 and above.\n- Keep existing workspace files, provider credentials, preferences, and downloaded models. No workspace reset or migration is needed for this change.\n- Retain the background-removal download corrections from 0.2.1 and 0.2.2. End-to-end Windows background-removal verification remains a separate runtime check.\n\nClose Thoock and install this version over your previous installation. Update checks continue to open the installer download in your browser; automatic installation is deferred. Older release downloads remain available.\n\nApple silicon macOS and Windows x64 Beta installers. macOS is ad hoc signed and not notarized; Windows is unsigned. Background removal requires macOS 13.3 or later. Older installers do not roll back workspace data.\n",
   "notesUrl": "/changelog/",
   "downloads": {
     "darwin-aarch64": {
       "platform": "macOS",
       "architecture": "Apple silicon (ARM64)",
-      "url": "/downloads/0.2.2/Thoock_0.2.2_macos_arm64.dmg",
-      "bytes": 6073361,
-      "sha256": "9438e00cb38d5edf2bce0b5c54fb06e11c3c7c5531617c9c41204f28890c8f51",
+      "url": "/downloads/0.2.3/Thoock_0.2.3_macos_arm64.dmg",
+      "bytes": 6069097,
+      "sha256": "c84ccc3df9ed2be884b58b194fa240fa4b6f2fcbfb939d8f9580074479e9c026",
       "note": "Release preview. Ad hoc signed; not notarized. Apple silicon. Background removal requires macOS 13.3 or later.",
-      "alternativeUrl": "/downloads/0.2.2/Thoock_0.2.2_macos_arm64.zip"
+      "alternativeUrl": "/downloads/0.2.3/Thoock_0.2.3_macos_arm64.zip"
     },
     "windows-x86_64": {
       "platform": "Windows",
       "architecture": "64-bit (x64)",
-      "url": "/downloads/0.2.2/Thoock_0.2.2_windows_x64_setup.exe",
-      "bytes": 4540209,
-      "sha256": "333ebad4d2621c9522608f0b23277912c9cb2ad989f509480b2d463135316999",
+      "url": "/downloads/0.2.3/Thoock_0.2.3_windows_x64_setup.exe",
+      "bytes": 4538221,
+      "sha256": "933b8c184bf6f1a534ba4b42b6bc7bd5af4a1523941c7dd446927b9766708d71",
       "note": "Release preview. Unsigned installer; Windows runtime testing is pending."
     }
   }
