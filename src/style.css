@@ -155,12 +155,18 @@
 @media(max-width:767px) { .release-downloads .text-link { min-height:44px; } }
 
 /* A single tactile surface: icons and labels stay aligned in every state. */
-.button { position:relative; transition:box-shadow 180ms var(--ease),border-color 180ms var(--ease); }
+.button { position:relative; transition:transform 180ms var(--ease),box-shadow 180ms var(--ease),border-color 180ms var(--ease); }
 .button::after { content:''; position:absolute; inset:1px; pointer-events:none; border-radius:10px; background:linear-gradient(180deg,#ffffff12,transparent 70%); opacity:0; transition:opacity 180ms var(--ease); }
 @media(hover:hover) and (pointer:fine) {
-  .button:hover { border-color:var(--green); box-shadow:inset 0 1px 0 #ffffff35,0 0 0 3px color-mix(in srgb,var(--green) 10%,transparent),0 5px 12px #15271d20; }
+  .button:hover { border-color:var(--green); box-shadow:inset 0 1px 0 #ffffff35,0 0 0 3px color-mix(in srgb,var(--green) 8%,transparent),0 7px 16px #15271d2b; }
   .button:hover::after { opacity:1; }
   .button:active { box-shadow:inset 0 2px 5px #08160d55; }
+}
+@media(prefers-reduced-motion:no-preference) {
+  @media(hover:hover) and (pointer:fine) {
+    .button:hover { transform:translateY(-2px); }
+  }
+  .button:active { transform:translateY(1px); }
 }
 .header-brand { display:flex; align-items:center; gap:10px; flex-shrink:0; }
 .header-brand .beta-badge { margin:0; }
