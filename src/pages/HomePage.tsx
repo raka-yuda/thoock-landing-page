@@ -19,6 +19,7 @@ import AppleLogoIcon from 'lucide-react/dist/esm/icons/laptop.mjs';
 import { preferredRelease, releases, formatFileSize, checksumsUrl } from '../releases';
 import { latestUpdate, formatUpdateDate } from '../changelog';
 import FeatureShowcase from '../FeatureShowcase';
+import TutorialSection from '../components/TutorialSection';
 
 const questions = [
   ['What is Thoock?', 'Thoock is a desktop workspace for stock-image creators. Research topics, write commercial briefs, generate candidates, review images, and prepare Adobe-compatible export packages in one connected workflow.'],
@@ -84,5 +85,5 @@ function FAQ() {
 }
 
 export default function HomePage() {
-  return <main id="main"><Hero /><div className="workflow-bridge container"><span className="bridge-icon"><FileCsvIcon size={23} /></span><p>Good images start before the prompt.<br /> <strong>And the work doesn’t end at generate.</strong></p><span className="bridge-line" /><span className="bridge-end"><CheckCircleIcon size={19} /> That’s where Thoock comes in.</span></div><FeatureShowcase /><WorkspaceSection /><DownloadPanel /><FAQ /></main>;
+  return <main id="main"><Hero /><div className="workflow-bridge container"><span className="bridge-icon"><FileCsvIcon size={23} /></span><p>Good images start before the prompt.<br /> <strong>And the work doesn’t end at generate.</strong></p><span className="bridge-line" /><span className="bridge-end"><CheckCircleIcon size={19} /> That’s where Thoock comes in.</span></div><FeatureShowcase /><TutorialSection /><WorkspaceSection /><DownloadPanel /><FAQ /></main>;
 }

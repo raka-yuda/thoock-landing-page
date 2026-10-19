@@ -1,0 +1,115 @@
+1
+00:00:02,333 --> 00:00:07,966
+Let's take an idea through Thoock, from researching an opportunity to preparing an export package.
+
+2
+00:00:07,966 --> 00:00:11,346
+Start by giving the next batch a clear direction.
+
+3
+00:00:12,875 --> 00:00:15,368
+For a new batch, start in Opportunities.
+
+4
+00:00:15,368 --> 00:00:18,931
+Add a topic, import your research, or use AI research.
+
+5
+00:00:18,931 --> 00:00:24,631
+Choose an idea based on the buyer, market, and type of image you want to create.
+
+6
+00:00:26,166 --> 00:00:31,397
+Open Commercial briefs to give each image a buyer, a purpose, and a visual direction.
+
+7
+00:00:31,397 --> 00:00:38,022
+You can add a brief manually, or choose Create with AI to build a batch from a saved opportunity.
+
+8
+00:00:38,022 --> 00:00:40,812
+Review the brief before using it in generation.
+
+9
+00:00:42,333 --> 00:00:48,483
+In Image generation, select your brief and choose a provider, model, aspect ratio, and resolution.
+
+10
+00:00:48,483 --> 00:00:53,813
+Check the prompt, then review the generation request and confirm when you're ready.
+
+11
+00:00:53,813 --> 00:00:57,913
+AI features use your own provider key and billing account.
+
+12
+00:00:59,416 --> 00:01:01,692
+Open History to follow the generation.
+
+13
+00:01:01,692 --> 00:01:05,864
+Once it finishes, head to Review queue to inspect the results.
+
+14
+00:01:05,864 --> 00:01:12,312
+If a request fails, open its provider log to see what happened before deciding whether to retry.
+
+15
+00:01:13,833 --> 00:01:18,931
+In Review queue, inspect your images and choose the ones you want to keep.
+
+16
+00:01:18,931 --> 00:01:24,393
+If you already have images, use Import images to bring them into the same workflow.
+
+17
+00:01:24,393 --> 00:01:29,127
+Check composition and technical quality, look for defects, and complete the review checks.
+
+18
+00:01:30,666 --> 00:01:36,865
+Select the images you want to describe, then choose Generate AI metadata to create a draft.
+
+19
+00:01:36,865 --> 00:01:40,351
+Check each title, keyword list, and category before approval.
+
+20
+00:01:40,351 --> 00:01:45,000
+Make sure the details describe what is actually visible in the image.
+
+21
+00:01:46,541 --> 00:01:50,176
+In Adobe exports, select the approved images for your batch.
+
+22
+00:01:50,176 --> 00:01:52,720
+Click Prepare package and enter a name.
+
+23
+00:01:52,720 --> 00:01:55,991
+Confirm the package, then choose where to save it.
+
+24
+00:01:57,500 --> 00:02:00,560
+Open Export batches to find your saved package.
+
+25
+00:02:00,560 --> 00:02:05,914
+Check the prepared images and Adobe CSV before uploading them through your stock platform.
+
+26
+00:02:05,914 --> 00:02:11,269
+You can return to this history whenever you need to find a package again.
+
+27
+00:02:12,791 --> 00:02:16,713
+Return to the dashboard to see what needs your attention next.
+
+28
+00:02:16,713 --> 00:02:20,634
+Continue a brief, review more candidates, or prepare the next export.
+
+29
+00:02:20,634 --> 00:02:24,555
+Use the same workflow whenever you are ready for another batch.

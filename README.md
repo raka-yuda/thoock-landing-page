@@ -17,21 +17,21 @@ Browser tests use installed Google Chrome. The production site is static and bui
 
 ## Releases
 
-Installers live in `public/downloads/` and are copied into the production build. `public/releases/latest.json` (read by `src/releases.ts`) points to the supplied v0.2.2 macOS ARM64 DMG (with ZIP alternative) and Windows x64 setup executable. The hero selects the operating-system family; architecture, preview status, and file sizes remain visible. Mobile visitors see the desktop download options. All installer links use the download attribute.
+Installers live in `public/downloads/` and are copied into the production build. `public/releases/latest.json` (read by `src/releases.ts`) points to the supplied v0.2.3 macOS ARM64 DMG (with ZIP alternative) and Windows x64 setup executable. The hero selects the operating-system family; architecture, preview status, and file sizes remain visible. Mobile visitors see the desktop download options. All installer links use the download attribute.
 
 The latest `build-manifest.json` records file sizes, SHA-256 hashes, build provenance, and verification status. `SHA256SUMS.txt` is linked in the download panel. Stage releases with `npm run release:stage`; `npm run release:check` verifies every archived installer. See [release operations](docs/DESKTOP_RELEASES.md). The current macOS preview is ad hoc signed and not notarized; Windows is unsigned and runtime testing is pending. Minimum supported OS versions are not advertised without verified runtime support. If publishing multiple CPU architectures, add explicit labeled choices.
 
 ## Product imagery
 
-The hero uses a crop of the existing review queue from the desktop documentation collection. The brief editor uses a sanitized modal reference. Research, generation, review, export, and settings screenshots were captured from the actual Desktop browser preview using its read-only demo data. Illustrated demo assets are labeled as examples, not generation-quality claims.
+Product images use the current native app captures supplied in `../thoock-desktop-app/docs/screenshots/app/`. The hero and changelog show the review queue; feature panels use opportunities, commercial briefs, and export preparation; the workspace section shows general settings. Captures show example workspace content, without making generation-quality claims.
 
-`scripts/prepare-assets.mjs` records asset provenance and can regenerate the images when the sibling desktop project is available at `../thoock-desktop-app`, with its browser preview serving on port 1421. It is a development utility; the site itself has no dependency on sibling folders or servers. All shipped assets live in `public/`. Original screenshots are unchanged.
+Run `npm run assets:prepare` to regenerate the complete-window WebP images and their 480 px and 800 px variants. `scripts/prepare-assets.mjs` preserves every screenshot in full, including native title bars, sidebars, dialogs, and transparent margins. It only resizes and encodes, and produces separate 1920 px previews that load when a visitor enlarges a screen. It needs only the supplied PNGs, with no running desktop preview. Source screenshots remain unchanged; all shipped assets live in `public/`.
 
 Self-hosted Geist and Lucide icons retain their license notices in `public/licenses/`. The original Thoock brand mark is preserved, with its existing Phosphor attribution. The original product and visual requirements are in [BRIEF.md](./BRIEF.md).
 
 ## Before publication
 
-Confirm platform support requirements and public use of the reference imagery, and set the production domain and absolute social-preview metadata. There is no analytics, email collection, or backend.
+Confirm platform support requirements and public use of the reference imagery, and set the production domain and absolute social-preview metadata. Umami analytics is optional; there is no email collection or backend.
 
 ## Changelog
 
@@ -43,8 +43,9 @@ Micro interactions use short CSS transitions and viewport entrance animations. T
 
 ## Feature showcase
 
-The homepage feature board groups planning, production/review, and delivery into three visual stories. Visitors can enlarge the actual product screenshots. Panels reveal once on scroll and have subtle hover feedback; there is no timed playback or replay control. The component lives in `src/FeatureShowcase.tsx`, with responsive materials in `src/features.css`. Its selected screenshot is the single source of truth for the native dialog; the accessible title and image commit before focus moves, and closing releases the full-size image.
+The homepage tells three short visual stories: finding direction, creating and reviewing images, and finishing a package. Balanced groups of complete app windows carry the detail; there is no screen-by-screen onboarding text, simulated window chrome, autoplay, or replay control. Visitors can enlarge any screen for a detailed 1920 px preview.
 
+`src/FeatureShowcase.tsx` owns the content and accessible preview dialog, and `src/features.css` keeps the image compositions responsive within the existing material system. Screenshots have accurate dimensions, lazy loading, asynchronous decoding, and mobile variants.
 Page-load motion introduces the header, app mark, headline, copy, download actions, and screenshot layers in order. IntersectionObserver triggers one-time staggered entrances for the feature panels, workspace, downloads, FAQ, and changelog as they enter the viewport. `src/useEntranceMotion.ts` owns both sequences, preserves existing screenshot transforms, cleans up animations on unmount, and cancels immediately if reduced motion is enabled during the session. It does not intercept scrolling or leave hidden content behind.
 
 
@@ -93,7 +94,7 @@ CI uploads its tested Docker image, transfers it over SSH, and starts that exact
 
 ## React page structure
 
-`src/App.tsx` owns the shared header, footer, and entrance behavior. `src/pages/HomePage.tsx` and `src/pages/ChangelogPage.tsx` contain each route's content, sharing the window material through `src/components/WindowFrame.tsx`. The bootstrap fetches the current page and React runtime concurrently; visitors do not download the other page's JavaScript. The server entry still renders both routes into complete static HTML. The changelog uses responsive screenshot variants and accurate intrinsic dimensions for mobile loading.
+`src/App.tsx` owns the shared header, footer, and entrance behavior. `src/pages/HomePage.tsx` and `src/pages/ChangelogPage.tsx` contain each route's content and show the native chrome already included in the app screenshots. The bootstrap fetches the current page and React runtime concurrently; visitors do not download the other page's JavaScript. The server entry still renders both routes into complete static HTML. The changelog uses responsive screenshot variants and accurate intrinsic dimensions for mobile loading.
 
 `src/useAppearance.ts` subscribes React to the browser's appearance preference using `useSyncExternalStore`. System changes apply until a visitor chooses an explicit theme. Saved changes and clearing the preference in another tab synchronize the document and toggle label without a refresh. Its server snapshot keeps prerendered HTML and hydration consistent.
 
@@ -107,4 +108,12 @@ Use the same Umami instance as the portfolio, with a separate website for `thooc
 
 For GitHub Actions/Docker deployment, set repository secrets `UMAMI_SCRIPT_URL` and `UMAMI_WEBSITE_ID`, matching the portfolio’s secret names, then rebuild/deploy. These are public tracking settings, not Umami login credentials. Docker passes them into Vite at build time; setting container runtime environment variables alone cannot change a static site.
 
-In Umami, open **Events → desktop-download**. This uses [Umami’s native event attributes](https://docs.umami.is/docs/track-events). Properties include a readable `title`, `platform`, `architecture`, `version`, `format`, `source` (`hero`, `downloads`, or `changelog`), and `file`. Primary installers, ZIP alternatives, and historical versions are labelled. Navigation to the download section and checksum links do not count as installer downloads. Counts measure clicks that start downloads, not completed transfers or unique app installations. Titles also appear on link hover.
+In Umami, open **Events → desktop-download**. This uses [Umami’s native event attributes](https://docs.umami.is/docs/track-events). Properties include a readable `title`, `platform`, `architecture`, `version`, `format`, `source` (`hero`, `downloads`, or `changelog`), and `file`. Primary installers, ZIP alternatives, and historical versions are labelled. Navigation to the download section and checksum links do not count as installer downloads. Counts measure clicks that start downloads, not completed transfers or unique app installations. The readable event title is kept in tracking data without a native tooltip covering the button.
+
+### Beta version labels
+
+The homepage shows one **Beta** badge beside the header logo for `0.x.x`, hiding it at major `1` and above. Homepage version labels remain numeric. Changelog entries retain their individual release badges. Keep numeric release versions, filenames, manifests, and update ordering unchanged. Previous installers remain archived.
+
+## Videos
+
+The homepage includes the full desktop tutorial with native controls, English captions, and an app poster. It does not autoplay or preload the MP4. Only the three selected final videos are kept in `public/videos/`: `thoock-tutorial.mp4`, `thoock-promo-vertical.mp4`, and `thoock-promo-landscape.mp4`, with their posters and captions. Experimental cuts, sound studies, rendering intermediates, and layout controls were removed. See [video assets](docs/VIDEOS.md).
