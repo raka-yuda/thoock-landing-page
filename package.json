@@ -12,7 +12,8 @@
     "test:readiness": "node --test scripts/wait-for-http.test.mjs",
     "release:check": "node scripts/check-release.mjs",
     "release:stage": "node scripts/stage-desktop-release.mjs",
-    "test:release": "node --test scripts/check-release-http.test.mjs"
+    "test:release": "node --test scripts/check-release-http.test.mjs",
+    "assets:prepare": "node scripts/prepare-assets.mjs && node scripts/optimize-screenshots.mjs"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",
