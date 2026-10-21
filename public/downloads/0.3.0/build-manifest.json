@@ -1,0 +1,61 @@
+{
+  "product": "Thoock",
+  "version": "0.3.0",
+  "buildType": "release-preview",
+  "builtAt": "2026-10-21T14:10:31.613Z",
+  "sourceRevision": "93b93ca064b9c9f56cf7863ed5da659071c23b5e",
+  "sourceHasUncommittedChanges": false,
+  "sourceSnapshotSha256": "3779e550c4565f1feda87ff8e2d9b2382d8293f4c2157454d7521d495822be66",
+  "verification": {
+    "frontendBuild": true,
+    "uiUnitTestsPassed": 13,
+    "macOSCodeSignature": "verified-local-certificate",
+    "macOSNotarized": false,
+    "macOSArchiveIntegrity": "verified",
+    "macOSExecutableMinimumOS": "11.0",
+    "windowsAppPE": {
+      "machine": "0x8664",
+      "authenticodePresent": false
+    },
+    "windowsInstallerPE": {
+      "machine": "0x14c",
+      "authenticodePresent": false
+    },
+    "windowsNativeCi": {
+      "runUrl": "https://github.com/raka-yuda/thoock-desktop-app/actions/runs/39610477684",
+      "sourceRevision": "93b93ca064b9c9f56cf7863ed5da659071c23b5e",
+      "artifactSha256": "38f9edc551ea79a50ea3cd455058e9c29c969ba1d9488bc3f17b3e2cf6a96191"
+    },
+    "windowsRuntimeTested": false,
+    "workspaceDataIncluded": false
+  },
+  "artifacts": [
+    {
+      "filename": "Thoock_0.3.0_macos_arm64.dmg",
+      "url": "/downloads/0.3.0/Thoock_0.3.0_macos_arm64.dmg",
+      "platform": "macOS",
+      "architecture": "arm64",
+      "format": "dmg",
+      "bytes": 23882736,
+      "sha256": "298913c9cf85ffc00dc0287e6f05e41779036b27a98267cee5ff79aa42d11ffb"
+    },
+    {
+      "filename": "Thoock_0.3.0_macos_arm64.zip",
+      "url": "/downloads/0.3.0/Thoock_0.3.0_macos_arm64.zip",
+      "platform": "macOS",
+      "architecture": "arm64",
+      "format": "zip",
+      "bytes": 23810075,
+      "sha256": "d65ea35edd7041e6530af1c17ffb2196cdfb3656850abbdefc677c2ca3d1ee8e"
+    },
+    {
+      "filename": "Thoock_0.3.0_windows_x64_setup.exe",
+      "url": "/downloads/0.3.0/Thoock_0.3.0_windows_x64_setup.exe",
+      "platform": "Windows",
+      "architecture": "x64",
+      "format": "nsis",
+      "bytes": 22398614,
+      "sha256": "bdbc1fed0ec01a377b9ee8477cfdb1cf1a154c7e97fd7b057350eff3295f496e"
+    }
+  ]
+}

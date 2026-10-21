@@ -1,0 +1,3 @@
+298913c9cf85ffc00dc0287e6f05e41779036b27a98267cee5ff79aa42d11ffb  Thoock_0.3.0_macos_arm64.dmg
+d65ea35edd7041e6530af1c17ffb2196cdfb3656850abbdefc677c2ca3d1ee8e  Thoock_0.3.0_macos_arm64.zip
+bdbc1fed0ec01a377b9ee8477cfdb1cf1a154c7e97fd7b057350eff3295f496e  Thoock_0.3.0_windows_x64_setup.exe

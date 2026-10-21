@@ -2,6 +2,29 @@
 // Source: thoock-desktop-app/package.json and docs/IMPLEMENTATION_STATUS.md.
 export const changelog = [
   {
+    version: '0.3.0',
+    date: '2026-10-21',
+    status: 'Beta',
+    title: 'Photos, footage, and more ways to finish your metadata.',
+    summary: 'Review video alongside images, prepare Shutterstock submissions, and choose Anthropic Claude or OpenRouter for AI-assisted research and metadata.',
+    highlights: [
+      { label: 'Review your footage', text: 'Import or drop video batches, browse a four-column library, inspect playback and sampled frames, and prepare AI metadata with explicit confirmation.' },
+      { label: 'Prepare once', text: 'General metadata and separate Adobe Stock and Shutterstock categories now live in Review queue. Export sections focus on ready files and agency CSVs.' },
+      { label: 'Choose your AI provider', text: 'Anthropic Claude and OpenRouter join OpenAI and Google Gemini for research, briefs, photo/editorial metadata, and sampled-frame video metadata.' },
+    ],
+    details: [
+      'Videos stay in their original folders. Only selected analysis frames, timestamps, and supplied context are sent for AI metadata; full footage and audio stay on the device. Video originals need their own backup.',
+      'Use embedded capture-date and location hints to assist real-photo editorial captions. Confirm the facts yourself; GPS coordinates are not automatically treated as a verified city.',
+      'Export reviewed original images and Shutterstock CSVs, or video metadata CSVs using original filenames. Upload the original footage yourself. Shutterstock does not accept AI-generated contributor images.',
+      'Use separate General, Adobe Stock, and Shutterstock metadata sections, with optional Shutterstock text overrides. Adobe image packages now contain upload images and metadata CSV without extra reports.',
+      'Confirm bulk human review, open the saved export folder, and use clearer readiness indicators, compact cards, selection controls, tooltips, and navigation.',
+      'Provider keys remain in the operating-system vault with a zeroizing backend cache and idle expiry. Paid requests require confirmation and are not automatically retried. OpenRouter routing requests no training-data collection and disables fallback hosts.',
+      'Bundle locally built FFmpeg tools with matching source and license notices. Explicit D3D11 support corrects the Windows Media Foundation build; CI retains compiler and browser diagnostics.',
+      'Update TLS/ZIP dependencies and preserve older versioned installers. New provider transports are covered by mocked tests; live paid-model quality and installed Windows behavior still require device testing.',
+    ],
+    availability: 'Back up before upgrading: this release adds video records and a workspace schema migration. Apple silicon macOS is signed with a local certificate and is not notarized; Windows is unsigned. Both installers use 0.3.0. Updates remain browser downloads followed by manual installation; older installers do not roll back workspace data.',
+  },
+  {
     version: '0.2.3',
     date: '2026-10-19',
     status: 'Beta',
