@@ -47,7 +47,7 @@ They do not require rebuilding or replacing unchanged installers.
 3. In the landing project run `npm run release:stage`. The script defaults to
    sibling `../thoock-desktop-app` and its standard build output paths. Optional
    flags: `--desktop`, `--mac-app`, `--mac-dmg`, `--windows-installer`, and
-   `--windows-exe`. It refuses to overwrite an existing version, verifies app
+   `--windows-exe`. When using native CI artifacts, `--windows-ci-provenance` records the verified artifact digest and run URL, and requires its source revision to match the desktop checkout. It refuses to overwrite an existing version, verifies app
    versions/architectures, the macOS signature and DMG, runs the frontend build
    and unit tests, creates/checks the ZIP, and computes artifact SHA-256 values.
    It stages files first, then writes the version manifest and updates the local
@@ -108,7 +108,7 @@ replace itself, restart, or install anything automatically. Users should back up
 finish work, close Thoock, and run the installer. The existing workspace remains
 separate from the app; schema migrations still require upgrade testing.
 
-Mac previews are ad-hoc signed, not notarized. Windows previews are unsigned.
+Current Mac previews use the local code-signing certificate and are not notarized. Older archived releases may be ad hoc signed; each build manifest records its actual signature kind. Windows previews are unsigned.
 OS security prompts may appear during installation or after an update. Document
 those prompts without asking users to disable antivirus or Gatekeeper globally.
 A missing architecture gets an availability message, never another platform's

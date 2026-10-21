@@ -1,5 +1,5 @@
 // Stage verified local installers. This does not deploy, commit, or push.
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { readFile, writeFile, copyFile, mkdir, mkdtemp, rename, rm, stat } from 'node:fs/promises';
@@ -13,6 +13,7 @@ const { values } = parseArgs({ options: {
   desktop: { type: 'string', default: '../thoock-desktop-app' },
   'mac-app': { type: 'string' }, 'mac-dmg': { type: 'string' },
   'windows-installer': { type: 'string' }, 'windows-exe': { type: 'string' },
+  'windows-ci-provenance': { type: 'string' },
 } });
 const desktop = resolve(landing, values.desktop);
 const json = async path => JSON.parse(await readFile(path, 'utf8'));
@@ -42,6 +43,13 @@ const winExe = resolve(values['windows-exe'] ?? join(winBase, 'thoock-desktop-ap
 const run = (bin, args, cwd = landing) => execFileSync(bin, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' }).trim();
 assert.equal(run('/usr/libexec/PlistBuddy', ['-c', 'Print :CFBundleShortVersionString', join(macApp, 'Contents/Info.plist')]), version);
 run('/usr/bin/codesign', ['--verify', '--strict', '--verbose=2', macApp]);
+const signature = spawnSync('/usr/bin/codesign', ['-dv', '--verbose=4', macApp], { encoding: 'utf8' });
+assert.equal(signature.status, 0, 'Could not inspect macOS signing identity');
+const signatureDetails = signature.stderr;
+const signatureKind = signatureDetails.includes('Signature=adhoc') ? 'verified-ad-hoc'
+  : signatureDetails.includes('Authority=Developer ID Application:') ? 'verified-developer-id' : 'verified-local-certificate';
+const signingNote = signatureKind === 'verified-ad-hoc' ? 'Ad hoc signed' : signatureKind === 'verified-developer-id' ? 'Code signed' : 'Signed with a local certificate';
+
 run('/usr/bin/hdiutil', ['verify', macDmg]);
 const executable = join(macApp, 'Contents/MacOS/thoock-desktop-app');
 assert.ok(run('/usr/bin/lipo', ['-archs', executable]).includes('arm64'));
@@ -97,6 +105,15 @@ try {
     artifacts.push({ filename, url: `/downloads/${version}/${filename}`, platform, architecture, format, bytes: (await stat(path)).size, sha256: hash.digest('hex') });
   }
   const git = (...args) => run('git', args, desktop);
+  let windowsNativeCi;
+  if (values['windows-ci-provenance']) {
+    const ci = await json(resolve(values['windows-ci-provenance']));
+    assert.equal(ci.sourceRevision, git('rev-parse', 'HEAD'), 'Windows CI source differs from desktop source');
+    assert.match(ci.artifactSha256, /^[a-f0-9]{64}$/, 'Invalid Windows artifact digest');
+    assert.match(ci.ciRun, /^https:\/\/github\.com\/raka-yuda\/thoock-desktop-app\/actions\/runs\/\d+$/, 'Unexpected CI run URL');
+    windowsNativeCi = { runUrl: ci.ciRun, sourceRevision: ci.sourceRevision, artifactSha256: ci.artifactSha256 };
+  }
+
   const sourceHash = createHash('sha256');
   for (const file of git('ls-files', '--cached', '--others', '--exclude-standard').split('\n').filter(Boolean).sort()) {
     try { sourceHash.update(file + '\0'); sourceHash.update(createHash('sha256').update(await readFile(join(desktop, file))).digest()); }
@@ -104,8 +121,8 @@ try {
   }
   const provenance = { product: 'Thoock', version, buildType: 'release-preview', builtAt: new Date().toISOString(), sourceRevision: git('rev-parse', 'HEAD'), sourceHasUncommittedChanges: Boolean(git('status', '--porcelain')), sourceSnapshotSha256: sourceHash.digest('hex'), verification: {
     frontendBuild: true, uiUnitTestsPassed: results.numPassedTests,
-    macOSCodeSignature: 'verified-ad-hoc', macOSNotarized: false, macOSArchiveIntegrity: 'verified', macOSExecutableMinimumOS: minimumOS,
-    windowsAppPE, windowsInstallerPE, windowsRuntimeTested: false, workspaceDataIncluded: false,
+    macOSCodeSignature: signatureKind, macOSNotarized: false, macOSArchiveIntegrity: 'verified', macOSExecutableMinimumOS: minimumOS,
+    windowsAppPE, windowsInstallerPE, windowsNativeCi, windowsRuntimeTested: false, workspaceDataIncluded: false,
   }, artifacts };
   const notes = await readFile(join(desktop, 'docs/releases', `${version}.md`), 'utf8');
   const downloads = {};
@@ -114,7 +131,7 @@ try {
       platform: artifact.platform,
       architecture: artifact.platform === 'macOS' ? 'Apple silicon (ARM64)' : '64-bit (x64)',
       url: artifact.url, bytes: artifact.bytes, sha256: artifact.sha256,
-      note: artifact.platform === 'macOS' ? 'Release preview. Ad hoc signed; not notarized. Apple silicon. Background removal requires macOS 13.3 or later.' : 'Release preview. Unsigned installer; Windows runtime testing is pending.',
+      note: artifact.platform === 'macOS' ? `Release preview. ${signingNote}; not notarized. Apple silicon. Background removal requires macOS 13.3 or later.` : 'Release preview. Unsigned installer; Windows runtime testing is pending.',
       ...(artifact.platform === 'macOS' ? { alternativeUrl: artifacts.find(item => item.format === 'zip').url } : {}),
     };
   }
