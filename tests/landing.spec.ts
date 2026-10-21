@@ -192,7 +192,7 @@ test('loads only the icons used by the page instead of the complete icon library
 test('meaningful page content and downloads are present before React or JavaScript runs', async ({browser}) => {
   const page=await browser.newPage({javaScriptEnabled:false,reducedMotion:'reduce'});
   await page.goto('http://127.0.0.1:5173');
-  await expect(page.getByRole('heading',{level:1})).toContainText('Your stock-image workflow.');
+  await expect(page.getByRole('heading',{level:1})).toContainText('Your stock-content workflow.');
   await expect(page.locator('#download a.platform-download')).toHaveCount(2);
   await page.getByText('Do I need a Thoock account?',{exact:true}).click();
   await expect(page.locator('details[open]')).toContainText('no Thoock sign-in');

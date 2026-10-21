@@ -23,7 +23,7 @@ function Header({ changelogPage = false }: { changelogPage?: boolean }) {
 }
 
 function Footer() {
-  return <footer className="footer container"><div className="footer-top"><Brand small /><p>A desktop workspace for stock-image creators.</p><a href="/changelog/" className="text-link footer-changelog">Changelog <ArrowUpRightIcon size={15} /></a><a href="#top" className="text-link">Back to top <ArrowUpRightIcon size={15} /></a></div><div className="footer-bottom"><span>Made for the work between an idea and an image.</span><span>Independent of Adobe. Built for your workflow.</span></div></footer>;
+  return <footer className="footer container"><div className="footer-top"><Brand small /><p>A desktop workspace for stock-photo and footage creators.</p><a href="/changelog/" className="text-link footer-changelog">Changelog <ArrowUpRightIcon size={15} /></a><a href="#top" className="text-link">Back to top <ArrowUpRightIcon size={15} /></a></div><div className="footer-bottom"><span>Made for the work between an idea and an image.</span><span>Independent of stock agencies. Built for your workflow.</span></div></footer>;
 }
 export default function App({ pathname, children, onHydrated }: { pathname?: string; children: ReactNode; onHydrated?: () => void }) {
   const path = pathname ?? (typeof window === 'undefined' ? '/' : window.location.pathname);

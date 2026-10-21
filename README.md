@@ -17,9 +17,9 @@ Browser tests use installed Google Chrome. The production site is static and bui
 
 ## Releases
 
-Installers live in `public/downloads/` and are copied into the production build. `public/releases/latest.json` (read by `src/releases.ts`) points to the supplied v0.2.3 macOS ARM64 DMG (with ZIP alternative) and Windows x64 setup executable. The hero selects the operating-system family; architecture, preview status, and file sizes remain visible. Mobile visitors see the desktop download options. All installer links use the download attribute.
+Installers live in `public/downloads/` and are copied into the production build. `public/releases/latest.json` (read by `src/releases.ts`) points to the supplied v0.3.0 macOS ARM64 DMG (with ZIP alternative) and Windows x64 setup executable. The hero selects the operating-system family; architecture, preview status, and file sizes remain visible. Mobile visitors see the desktop download options. All installer links use the download attribute.
 
-The latest `build-manifest.json` records file sizes, SHA-256 hashes, build provenance, and verification status. `SHA256SUMS.txt` is linked in the download panel. Stage releases with `npm run release:stage`; `npm run release:check` verifies every archived installer. See [release operations](docs/DESKTOP_RELEASES.md). The current macOS preview is ad hoc signed and not notarized; Windows is unsigned and runtime testing is pending. Minimum supported OS versions are not advertised without verified runtime support. If publishing multiple CPU architectures, add explicit labeled choices.
+The latest `build-manifest.json` records file sizes, SHA-256 hashes, build provenance, and verification status. `SHA256SUMS.txt` is linked in the download panel. Stage releases with `npm run release:stage`; `npm run release:check` verifies every archived installer. See [release operations](docs/DESKTOP_RELEASES.md). The current macOS preview is signed with a local certificate and is not notarized; Windows is unsigned and runtime testing is pending. Minimum supported OS versions are not advertised without verified runtime support. If publishing multiple CPU architectures, add explicit labeled choices.
 
 ## Product imagery
 
@@ -117,3 +117,7 @@ Both pages show one **Beta** badge beside the header logo for `0.x.x`, hiding it
 ## Videos
 
 The homepage includes the full desktop tutorial with native controls, English captions, and an app poster. It does not autoplay or preload the MP4. Only the three selected final videos are kept in `public/videos/`: `thoock-tutorial.mp4`, `thoock-promo-vertical.mp4`, and `thoock-promo-landscape.mp4`, with their posters and captions. Experimental cuts, sound studies, rendering intermediates, and layout controls were removed. See [video assets](docs/VIDEOS.md).
+
+## 0.3.0 release
+
+The new release adds video review and CSV delivery, Shutterstock image exports, General and agency-specific metadata, verified editorial helpers, Anthropic Claude and OpenRouter, and native media-tool builds. Video originals remain external and need a separate backup. See the 0.3.0 changelog and versioned release notes for migration and runtime-test limits. Release staging records the actual macOS signing kind; local certificate signing is not Apple Developer ID signing or notarization.
