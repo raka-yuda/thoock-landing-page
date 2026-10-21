@@ -22,15 +22,15 @@ import FeatureShowcase from '../FeatureShowcase';
 import TutorialSection from '../components/TutorialSection';
 
 const questions = [
-  ['What is Thoock?', 'Thoock is a desktop workspace for stock-image creators. Research topics, write commercial briefs, generate candidates, review images, and prepare Adobe-compatible export packages in one connected workflow.'],
+  ['What is Thoock?', 'Thoock is a desktop workspace for stock-photo and footage creators. Research topics, write commercial briefs, generate image candidates, review images and videos, and prepare Adobe Stock and Shutterstock metadata in one workflow.'],
   ['Do I need a Thoock account?', 'No. Thoock Desktop is a single-user workspace that lives on your computer. There is no Thoock sign-in required.'],
-  ['Do I need my own API keys?', 'Yes, for provider-backed features. Connect supported services such as OpenAI or Gemini for text and research, and SnapGen for image generation. Provider usage may incur separate charges. Local research and brief tools work without credentials.'],
-  ['Can I use images I already have?', 'Yes. Import JPEG, PNG, or WebP images into the review workflow. You can review their quality, edit metadata, and prepare approved files for export without generating new images.'],
+  ['Do I need my own API keys?', 'Yes, for provider-backed features. Connect OpenAI, Google Gemini, Anthropic Claude, or OpenRouter for research and metadata, and SnapGen for image generation. Provider usage may incur separate charges. Local research and brief tools work without credentials.'],
+  ['Can I use photos and videos I already have?', 'Yes. Import supported images and videos, or drag and drop a batch into Thoock. Review quality and metadata before exporting. Video originals stay in their existing folders and need a separate backup; video exports contain metadata CSVs rather than copies of your footage.'],
   ['Does it work offline?', 'Your local workspace tools do. Provider-backed research, image generation, and metadata requests need an internet connection and your configured credentials.'],
   ['Does it upload to Adobe Stock for me?', 'Thoock prepares the files and metadata. You review your package and upload it manually in Adobe Contributor Portal. Adobe decides whether to accept submissions.'],
   ['Where are my files and API keys stored?', 'Your workspace and images are stored locally. API keys are stored in the operating-system credential vault. Provider-backed actions send the relevant prompts or images to the service you configure.'],
   ['How do I install or update Thoock?', 'Download the installer for your computer. On macOS, drag Thoock into Applications. Because this preview is not notarized, macOS may require you to allow it in System Settings → Privacy & Security. Windows may show an unknown-publisher or SmartScreen warning. Only proceed if you trust this download; managed computers may block it. To update, back up your workspace, close Thoock, and install the newer version. Your workspace is stored separately from the app.'],
-  ['Which computers can run Thoock?', 'Release-preview downloads are available for Apple silicon Macs (ARM64) and 64-bit Windows (x64). The macOS build is ad hoc signed and not notarized. The Windows installer is unsigned and Windows runtime testing is pending. An Intel Mac build is not included.'],
+  ['Which computers can run Thoock?', 'Release-preview downloads are available for Apple silicon Macs (ARM64) and 64-bit Windows (x64). The macOS build is signed with a local certificate and is not notarized. The Windows installer is unsigned and Windows runtime testing is pending. An Intel Mac build is not included.'],
 ];
 
 
@@ -43,7 +43,7 @@ function Hero() {
   }, []);
   return <section className="hero" aria-labelledby="hero-title">
     <div className="hero-copy"><div className="app-emblem"><img src="/thoock-icon.svg" alt="" width="76" height="76" /></div>
-      <h1 id="hero-title">Your stock-image workflow.<br /> <span>All together.</span></h1>
+      <h1 id="hero-title">Your stock-content workflow.<br /> <span>All together.</span></h1>
       <p>Research the opportunity. Shape the brief. Generate or import images, review the results, and prepare an Adobe Stock package.</p>
       <div className="hero-actions"><a className="button primary large" {...(release ? downloadAnalytics(release, 'hero') : {})} href={release?.url ?? '#download'} download={release ? release.url.split('/').pop() : undefined}><DownloadSimpleIcon size={20} />{release ? `Download for ${release.platform}` : mobile ? 'View desktop downloads' : 'View download options'}</a><a className="text-link" href="#workflow">Explore the workflow <ArrowDownIcon size={16} /></a></div>
       <p className="hero-note">Local workspace. Your own API keys. No Thoock account.<span className="hero-release-info">v{release?.version ?? latestUpdate.version} {release ? `for ${release.architecture}` : 'for macOS and Windows'}</span></p>
@@ -70,7 +70,7 @@ function WorkspaceSection() {
 }
 
 function DownloadPanel() {
-  return <section className="section container download-section" id="download" aria-labelledby="download-title"><div className="download-panel"><div className="download-copy"><div className="download-emblem"><img src="/thoock-icon.svg" width="72" height="72" alt="" /></div><h2 id="download-title">Make room for<br /> your next batch.</h2><p>Bring your stock-image production<br className="desktop-break" /> into one desktop workspace.</p><span className="download-detail"><CheckIcon size={15} /> No Thoock account needed</span><a className="latest-update-link" href="/changelog/"><span className="latest-update-version">Latest update: v{latestUpdate.version}</span><span>Updated {formatUpdateDate(latestUpdate.date)} <ArrowUpRightIcon size={12} /></span></a></div><div className="platforms">{releases.map(release => {
+  return <section className="section container download-section" id="download" aria-labelledby="download-title"><div className="download-panel"><div className="download-copy"><div className="download-emblem"><img src="/thoock-icon.svg" width="72" height="72" alt="" /></div><h2 id="download-title">Make room for<br /> your next batch.</h2><p>Bring your stock-content production<br className="desktop-break" /> into one desktop workspace.</p><span className="download-detail"><CheckIcon size={15} /> No Thoock account needed</span><a className="latest-update-link" href="/changelog/"><span className="latest-update-version">Latest update: v{latestUpdate.version}</span><span>Updated {formatUpdateDate(latestUpdate.date)} <ArrowUpRightIcon size={12} /></span></a></div><div className="platforms">{releases.map(release => {
     const Logo = release.platform === 'macOS' ? AppleLogoIcon : WindowsLogoIcon;
     return <div className="platform" key={release.platform}><span className="platform-logo"><Logo size={27} /></span><div className="platform-info"><h3>Thoock for {release.platform}</h3><p>{release.architecture} / v{release.version} / {formatFileSize(release.bytes)}</p></div>
       {release.available ? <a className="button primary platform-download" {...downloadAnalytics(release, 'downloads')} href={release.url} download={release.url.split('/').pop()}><DownloadSimpleIcon size={16} />Download for {release.platform}</a> : <span className="unavailable">Download not available yet</span>}

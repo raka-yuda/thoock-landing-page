@@ -61,7 +61,7 @@ export default function FeatureShowcase() {
       </article>
 
       <article className="feature-card story-delivery" aria-labelledby="delivery-title">
-        <div className="story-heading"><h3 id="delivery-title">The files. The details.<br />The next batch.</h3><p>Approved images, Adobe CSV metadata, and reports in one package. A clear view of the workspace keeps the next round moving.</p></div>
+        <div className="story-heading"><h3 id="delivery-title">The files. The details.<br />The next batch.</h3><p>Prepare reviewed images and agency CSV metadata for Adobe Stock or Shutterstock. Export video metadata separately, then upload your original footage yourself.</p></div>
         <div className="story-scene delivery-scene">{screenshot('export', wideScreen, 'delivery-main')}<div className="contact-strip">{screenshot('dashboard', '(max-width: 767px) calc(100vw - 40px), (max-width: 1100px) 30vw, 357px')}{screenshot('history', halfScreen)}{screenshot('logs', halfScreen)}</div></div>
         <div className="feature-end"><p>Open any screen for a closer look.</p><span>Prepared in Thoock. Uploaded by you.</span></div>
       </article>

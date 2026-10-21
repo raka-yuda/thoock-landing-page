@@ -3,7 +3,7 @@ import {test,expect} from '@playwright/test';
 test('built pages deliver correct HTML and usable downloads without JavaScript',async({browser})=>{
   const page=await browser.newPage({javaScriptEnabled:false,reducedMotion:'reduce'});
   await page.goto('http://127.0.0.1:4173/');
-  await expect(page.getByRole('heading',{level:1})).toContainText('Your stock-image workflow.');
+  await expect(page.getByRole('heading',{level:1})).toContainText('Your stock-content workflow.');
   await expect(page.locator('#download a.platform-download')).toHaveCount(2);
   await page.goto('http://127.0.0.1:4173/changelog');
   await expect(page).toHaveURL('http://127.0.0.1:4173/changelog/');
