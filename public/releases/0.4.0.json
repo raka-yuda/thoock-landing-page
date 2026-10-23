@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "version": "0.4.0",
+  "notes": "Thoock 0.4.0 — local image tools and smoother review workflows\n\nA shared Beta release for Apple silicon macOS and Windows x64. Save a workspace backup before updating; the installer leaves workspace data, provider keys, preferences, and downloaded models in place.\n\nCreate and review\n- Add optional local image upscaling with Real-ESRGAN at 2× or 4×. Processing stays on this device after the model download, preserves transparency, and requires explicit review before applying the result.\n- Manage background-removal and upscaling models together in Settings → Image tools with measured downloads, cancellation, retry-safe caching, and retained license notices.\n- Download reviewed images and open the destination folder directly from the save notification. Existing files are replaced safely after confirmation by the native save dialog.\n- Add a brief from an opportunity by choosing manual entry or AI-assisted creation first; the selected opportunity remains connected to either flow.\n\nReliability and security\n- Local model files and shared runtimes use pinned HTTPS hosts, SHA-256 verification, bounded paths, atomic persistence, and cancellation checks.\n- Image processing keeps originals immutable and preserves alpha through previews and exports. Human review and metadata checks remain required before approval.\n- Toast actions remain usable above review dialogs, and local model progress uses the shared centered operation UI.\n\nInstallation\nClose Thoock and install 0.4.0 over the previous version. macOS is signed with the local release certificate and is not notarized; Windows is unsigned. Updates remain browser downloads followed by manual installation. Older installers remain archived.\n\nVerification limits\nAutomated native, unit, and browser tests cover the model lifecycle, image bounds, cancellation, downloads, save receipts, and brief creation flow. Windows installer execution, runtime inference, and upgrade behavior still require verification on a real Windows desktop.\n",
+  "notesUrl": "/changelog/",
+  "downloads": {
+    "darwin-aarch64": {
+      "platform": "macOS",
+      "architecture": "Apple silicon (ARM64)",
+      "url": "/downloads/0.4.0/Thoock_0.4.0_macos_arm64.dmg",
+      "bytes": 23956600,
+      "sha256": "03ea2c50f3f1defa4635b5ee342b5c5ff9825acb800c1fbb281eed2f739e609d",
+      "note": "Release preview. Signed with a local certificate; not notarized. Apple silicon. Background removal requires macOS 13.3 or later.",
+      "alternativeUrl": "/downloads/0.4.0/Thoock_0.4.0_macos_arm64.zip"
+    },
+    "windows-x86_64": {
+      "platform": "Windows",
+      "architecture": "64-bit (x64)",
+      "url": "/downloads/0.4.0/Thoock_0.4.0_windows_x64_setup.exe",
+      "bytes": 22456830,
+      "sha256": "45c1f069ec0c39cc4616ec72cbf626dd6d7b85ce455194acacd6d6dfc56a0634",
+      "note": "Release preview. Unsigned installer; Windows runtime testing is pending."
+    }
+  }
+}
