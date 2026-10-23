@@ -2,6 +2,26 @@
 // Source: thoock-desktop-app/package.json and docs/IMPLEMENTATION_STATUS.md.
 export const changelog = [
   {
+    version: '0.4.0',
+    date: '2026-10-23',
+    status: 'Beta',
+    title: 'Sharper images, simpler local tools.',
+    summary: 'Upscale images locally, manage optional models with clear progress, and finish review downloads and briefs with fewer detours.',
+    highlights: [
+      { label: 'Upscale on device', text: 'Use optional 2× or 4× Real-ESRGAN enlargement from Image tools while preserving transparency and the original image.' },
+      { label: 'Manage local models', text: 'Download background-removal and upscaling models with measured progress, cancellation, retry-safe caching, and offline processing.' },
+      { label: 'Finish review faster', text: 'Open the saved image folder from the success notification and choose manual or AI-assisted brief creation from an opportunity.' },
+    ],
+    details: [
+      'Original files remain immutable while processed previews require explicit confirmation before application.',
+      'Model downloads use pinned HTTPS artifacts, SHA-256 verification, bounded paths, atomic persistence, and retained license notices.',
+      'Review download receipts open the destination folder without adding another footer control to the review dialog.',
+      'The release keeps the existing provider, metadata, export, backup, and workspace workflows intact.',
+      'Windows installer execution, local inference, and upgrade behavior still require verification on a real Windows desktop.',
+    ],
+    availability: 'Close Thoock and install over your previous version. macOS is signed with a local certificate and is not notarized; Windows is unsigned. Both installers use 0.4.0, and updates remain browser downloads followed by manual installation.',
+  },
+  {
     version: '0.3.0',
     date: '2026-10-21',
     status: 'Beta',
