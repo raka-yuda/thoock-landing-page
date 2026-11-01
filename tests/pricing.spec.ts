@@ -43,7 +43,8 @@ test.beforeAll(async () => {
   // A second Vite server must not rewrite the main test server's optimized
   // dependency cache and trigger page reloads during unrelated browser tests.
   cacheDir = await mkdtemp(join(tmpdir(), 'thoock-pricing-vite-'));
-  server = await createServer({ cacheDir, server: { host: '127.0.0.1', port: 0, strictPort: true } });
+  // Vite treats port 0 as its default 5173, already used by Playwright.
+  server = await createServer({ cacheDir, server: { host: '127.0.0.1', port: 5174, strictPort: false } });
   await server.listen();
   siteUrl = `http://127.0.0.1:${(server.httpServer!.address() as AddressInfo).port}`;
 });
