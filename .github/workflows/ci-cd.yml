@@ -67,10 +67,12 @@ jobs:
         env:
           VITE_UMAMI_SCRIPT_URL: ${{ secrets.UMAMI_SCRIPT_URL }}
           VITE_UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
+          VITE_PAYMENT_BASE_URL: ${{ vars.PAYMENT_BASE_URL }}
         run: |
           docker build \
             --build-arg VITE_UMAMI_SCRIPT_URL="$VITE_UMAMI_SCRIPT_URL" \
             --build-arg VITE_UMAMI_WEBSITE_ID="$VITE_UMAMI_WEBSITE_ID" \
+            --build-arg VITE_PAYMENT_BASE_URL="$VITE_PAYMENT_BASE_URL" \
             -t thoock-landing-page:${{ github.sha }} .
       - name: Check production routes and downloads
         shell: bash

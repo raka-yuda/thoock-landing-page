@@ -7,6 +7,8 @@ npm install
 npm run dev
 ```
 
+The landing page runs at `http://localhost:3001` by default, alongside the payment service at `http://localhost:3000`. To choose another landing-page port, run `npm run dev -- --port 3002`. Vite reports an occupied port instead of silently switching to a different one.
+
 ```sh
 npm run build
 npm run preview
@@ -17,7 +19,7 @@ Browser tests use installed Google Chrome. The production site is static and bui
 
 ## Releases
 
-Installers live in `public/downloads/` and are copied into the production build. `public/releases/latest.json` (read by `src/releases.ts`) points to the supplied v0.3.0 macOS ARM64 DMG (with ZIP alternative) and Windows x64 setup executable. The hero selects the operating-system family; architecture, preview status, and file sizes remain visible. Mobile visitors see the desktop download options. All installer links use the download attribute.
+Installers live in `public/downloads/` and are copied into the production build. `public/releases/latest.json` (read by `src/releases.ts`) points to the supplied v0.3.0 macOS ARM64 DMG (with ZIP alternative) and Windows x64 setup executable. The hero leads to trial and paid license choices. The download section lists the desktop platforms, architecture, preview status, and file sizes for existing license holders. All installer links use the download attribute.
 
 The latest `build-manifest.json` records file sizes, SHA-256 hashes, build provenance, and verification status. `SHA256SUMS.txt` is linked in the download panel. Stage releases with `npm run release:stage`; `npm run release:check` verifies every archived installer. See [release operations](docs/DESKTOP_RELEASES.md). The current macOS preview is signed with a local certificate and is not notarized; Windows is unsigned and runtime testing is pending. Minimum supported OS versions are not advertised without verified runtime support. If publishing multiple CPU architectures, add explicit labeled choices.
 
@@ -68,7 +70,7 @@ After replacing source screenshots, run `npm run assets:optimize` to regenerate 
 
 The build now prerenders both pages through `src/entry-server.tsx`. `dist/index.html` and `dist/changelog/index.html` contain their actual content, navigation, FAQ, and download links. The build fails if either page loses its static content. Production hosting remains entirely static; no Node server is required.
 
-The same rendering runs in the Vite development middleware, so the first screen is not an empty React container on port 5173 either. The small `src/main.tsx` bootstrap loads the React interactive chunk after the first frame or on an early interaction. An early button click is preserved and replayed once the handlers are ready. Native navigation, installer links, and FAQ disclosures work immediately.
+The same rendering runs in the Vite development middleware, so the first screen is not an empty React container on port 3001 either. The small `src/main.tsx` bootstrap loads the React interactive chunk after the first frame or on an early interaction. An early button click is preserved and replayed once the handlers are ready. Native navigation, installer links, and FAQ disclosures work immediately.
 
 Hydration-safe defaults avoid mismatches for appearance, platform detection, and reduced motion. CSS starts the initial entrance sequence with the HTML; React handles subsequent scroll reveals and interactive previews without replaying that initial entrance. The viewport declaration must precede responsive preloads, otherwise mobile browsers can fetch both desktop and mobile hero images.
 
@@ -109,6 +111,16 @@ Use the same Umami instance as the portfolio, with a separate website for `thooc
 For GitHub Actions/Docker deployment, set repository secrets `UMAMI_SCRIPT_URL` and `UMAMI_WEBSITE_ID`, matching the portfolio’s secret names, then rebuild/deploy. These are public tracking settings, not Umami login credentials. Docker passes them into Vite at build time; setting container runtime environment variables alone cannot change a static site.
 
 In Umami, open **Events → desktop-download**. This uses [Umami’s native event attributes](https://docs.umami.is/docs/track-events). Properties include a readable `title`, `platform`, `architecture`, `version`, `format`, `source` (`hero`, `downloads`, or `changelog`), and `file`. Primary installers, ZIP alternatives, and historical versions are labelled. Navigation to the download section and checksum links do not count as installer downloads. Counts measure clicks that start downloads, not completed transfers or unique app installations. The readable event title is kept in tracking data without a native tooltip covering the button.
+
+## License pricing and checkout
+
+The homepage pricing section requests the payment service's public `GET /api/pricing` catalog in the browser. It accepts zero-price offers and reads `licenseTerms` for trial duration, activation timing, device limits and eligibility. Trial offers appear first, alongside paid licenses; prices, promotions, IDs and checkout URLs come from the service. The shared feature list explains research, briefs, generation/import, review, export and the local workspace. AI provider usage is explicitly separate.
+
+The header and hero route visitors to license choices; the walkthrough is the secondary hero action. Free trials use **Start free trial**, and paid licenses use **Buy license**. Each action requires `checkoutAvailable` and a returned URL whose origin and `product` parameter match the catalog. A local simulated paid offer is labelled **Try test checkout**. The payment service handles license claims and payment; the landing page does not issue keys or handle credentials. Installers remain available for users who already have a trial or paid key.
+
+Set `VITE_PAYMENT_BASE_URL` in `.env.local` (for example `http://localhost:3000`). When it is missing or blank, pricing and its navigation link are hidden, no pricing request is sent, and the hero/header lead to downloads. Restart Vite or rebuild after changing the setting. Configure the payment service's `LANDING_PAGE_URL` to the Vite origin (normally `http://localhost:3001`, or the custom port you chose). Playwright starts a separate test server on port 5173. For production, set the public HTTPS origin as the GitHub Actions repository variable `PAYMENT_BASE_URL`, then rebuild the image. The setting is public and embedded at build time. The payment service must allow `https://thoock.ryuda.me` as its landing origin.
+
+Pricing is hidden when the service fails, returns an invalid or empty catalog, or takes longer than eight seconds. Navigation then leads to downloads; reload to check availability again. Disabled individual offers remain visible without checkout links. Simulation links are available only while viewing the landing page on localhost. The Umami events `trial-start` and `checkout-start` include only the public product ID and count clicks toward the service, not completed claims or purchases. Download events continue to measure installer clicks separately.
 
 ### Beta version labels
 

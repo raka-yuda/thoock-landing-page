@@ -41,8 +41,10 @@ test('page fits supported widths in both themes without broken images', async ({
   page.on('pageerror', error=>errors.push(error.message));
   for(const width of [320,375,390,768,1024,1280,1440]) {
     await page.setViewportSize({width,height:900});
-    await page.goto('/');
+    // Validate shipped layout without development-server reloads interrupting lazy images.
+    await page.goto('http://127.0.0.1:4173/');
     await page.evaluate(async()=>{ await document.fonts.ready; });
+    await expect(page.locator('#root')).toHaveAttribute('data-hydrated', 'true');
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`overflow at ${width}`).toBe(true);
     await expect(page.getByRole('heading',{level:1})).toBeVisible();
     expect(await page.locator('.hero-actions .primary').evaluate(el=>el.getBoundingClientRect().bottom)).toBeLessThan(900);
@@ -159,20 +161,21 @@ test('installer links download the exact artifacts from the supplied manifest',a
   expect(await checksums.text()).toContain(manifest.artifacts[0].sha256);
 });
 
-test('hero offers the matching desktop installer and keeps mobile on download options',async({browser})=>{
-  const manifest = await currentRelease();
-  for(const [userAgent,label,href] of [
-    ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)','Download for macOS',manifest.downloads['darwin-aarch64'].url],
-    ['Mozilla/5.0 (Windows NT 10.0; Win64; x64)','Download for Windows',(await currentRelease()).downloads['windows-x86_64'].url],
-    ['Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)','View desktop downloads','#download'],
+test('hero routes desktop and mobile visitors to downloads when pricing is unconfigured',async({browser})=>{
+  for(const userAgent of [
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)',
   ]) {
     const page=await browser.newPage({userAgent,reducedMotion:'reduce'});
     await page.goto('http://127.0.0.1:5173');
     const action=page.locator('.hero-actions .primary');
-    await expect(action).toHaveText(label);
-    await expect(action).toHaveAttribute('href',href);
-    if(userAgent.includes('Macintosh')) await expect(page.locator('.hero-release-info')).toContainText('Apple silicon (ARM64)');
-    if(userAgent.includes('iPhone')) expect(await action.getAttribute('download')).toBeNull();
+    await expect(action).toHaveText('Download Thoock');
+    await expect(action).toHaveAttribute('href','#download');
+    await expect(action).not.toHaveAttribute('download');
+    await action.click();
+    await expect(page).toHaveURL(/#download$/);
+    await expect(page.locator('#download .platform-download')).toHaveCount(2);
     await page.close();
   }
 });
@@ -203,16 +206,18 @@ test('meaningful page content and downloads are present before React or JavaScri
 
 test('hydration keeps dark appearance and platform downloads without recoverable errors', async ({browser})=>{
   const page=await browser.newPage({colorScheme:'dark',userAgent:'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'});
+  await page.route('**/api/pricing', route => route.fulfill({ status: 200, contentType: 'application/json', body: '{"products":[]}' }));
   const errors:string[]=[];
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
   await page.goto('http://127.0.0.1:5173');
-  await expect(page.locator('.hero-actions .primary')).toHaveText('Download for Windows');
+  await expect(page.locator('.hero-actions .primary')).toHaveText('Download Thoock');
   await expect(page.getByRole('button',{name:'Switch to light appearance'})).toBeVisible();
   await page.getByRole('button',{name:'Switch to light appearance'}).click();
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
-  await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href',(await currentRelease()).downloads['windows-x86_64'].url);
+  await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href','#download');
+  await expect(page.locator('#download .platform-download').last()).toHaveAttribute('href',(await currentRelease()).downloads['windows-x86_64'].url);
   expect(errors).toEqual([]);
   await page.close();
 });
@@ -301,4 +306,21 @@ test('three visual stories preserve whole windows and open detailed previews on 
     await expect(trigger).toBeFocused();
     await expect(page.locator('.image-dialog img')).toHaveCount(0);
   }
+});
+
+
+test('missing payment URL hides pricing before and after hydration without fetching it', async ({ page, browser }) => {
+  const pricingRequests: string[] = [];
+  page.on('request', request => { if (request.url().includes('/api/pricing')) pricingRequests.push(request.url()); });
+  await page.goto('/');
+  await expect(page.locator('#root')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('#pricing')).toHaveCount(0);
+  await expect(page.locator('a[href$="#pricing"]')).toHaveCount(0);
+  await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href', '#download');
+  expect(pricingRequests).toEqual([]);
+  const staticPage = await browser.newPage({ javaScriptEnabled: false });
+  await staticPage.goto('http://127.0.0.1:5173/');
+  await expect(staticPage.locator('#pricing')).toHaveCount(0);
+  await expect(staticPage.locator('a[href$="#pricing"]')).toHaveCount(0);
+  await staticPage.close();
 });

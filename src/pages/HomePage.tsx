@@ -1,5 +1,5 @@
+import { usePricingAvailability } from '../PricingAvailability';
 import { downloadAnalytics } from '../analytics';
-import { useEffect, useState } from 'react';
 import ArrowDownIcon from 'lucide-react/dist/esm/icons/arrow-down.mjs';
 import ArrowDownRightIcon from 'lucide-react/dist/esm/icons/arrow-down-right.mjs';
 import ArrowUpRightIcon from 'lucide-react/dist/esm/icons/arrow-up-right.mjs';
@@ -16,13 +16,15 @@ import KeyIcon from 'lucide-react/dist/esm/icons/key-round.mjs';
 import ShieldCheckIcon from 'lucide-react/dist/esm/icons/shield-check.mjs';
 import WindowsLogoIcon from 'lucide-react/dist/esm/icons/panels-top-left.mjs';
 import AppleLogoIcon from 'lucide-react/dist/esm/icons/laptop.mjs';
-import { preferredRelease, releases, formatFileSize, checksumsUrl } from '../releases';
+import { releases, formatFileSize, checksumsUrl } from '../releases';
 import { latestUpdate, formatUpdateDate } from '../changelog';
 import FeatureShowcase from '../FeatureShowcase';
 import TutorialSection from '../components/TutorialSection';
+import PricingSection from '../components/PricingSection';
 
 const questions = [
   ['What is Thoock?', 'Thoock is a desktop workspace for stock-photo and footage creators. Research topics, write commercial briefs, generate image candidates, review images and videos, and prepare Adobe Stock and Shutterstock metadata in one workflow.'],
+  ['How do I try Thoock?', 'Choose the trial in the pricing section to get your trial license key, then download and activate the desktop app. The current duration, activation timing, and eligibility limits are shown with the offer. AI-powered features use your own provider keys and may incur provider charges.'],
   ['Do I need a Thoock account?', 'No. Thoock Desktop is a single-user workspace that lives on your computer. There is no Thoock sign-in required.'],
   ['Do I need my own API keys?', 'Yes, for provider-backed features. Connect OpenAI, Google Gemini, Anthropic Claude, or OpenRouter for research and metadata, and SnapGen for image generation. Provider usage may incur separate charges. Local research and brief tools work without credentials.'],
   ['Can I use photos and videos I already have?', 'Yes. Import supported images and videos, or drag and drop a batch into Thoock. Review quality and metadata before exporting. Video originals stay in their existing folders and need a separate backup; video exports contain metadata CSVs rather than copies of your footage.'],
@@ -35,18 +37,13 @@ const questions = [
 
 
 function Hero() {
-  const [release, setRelease] = useState<ReturnType<typeof preferredRelease>>(undefined);
-  const [mobile, setMobile] = useState(false);
-  useEffect(() => {
-    setRelease(preferredRelease());
-    setMobile(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
-  }, []);
+  const { visible: pricingEnabled } = usePricingAvailability();
   return <section className="hero" aria-labelledby="hero-title">
     <div className="hero-copy"><div className="app-emblem"><img src="/thoock-icon.svg" alt="" width="76" height="76" /></div>
       <h1 id="hero-title">Your stock-content workflow.<br /> <span>All together.</span></h1>
       <p>Research the opportunity. Shape the brief. Generate or import images, review the results, and prepare an Adobe Stock package.</p>
-      <div className="hero-actions"><a className="button primary large" {...(release ? downloadAnalytics(release, 'hero') : {})} href={release?.url ?? '#download'} download={release ? release.url.split('/').pop() : undefined}><DownloadSimpleIcon size={20} />{release ? `Download for ${release.platform}` : mobile ? 'View desktop downloads' : 'View download options'}</a><a className="text-link" href="#workflow">Explore the workflow <ArrowDownIcon size={16} /></a></div>
-      <p className="hero-note">Local workspace. Your own API keys. No Thoock account.<span className="hero-release-info">v{release?.version ?? latestUpdate.version} {release ? `for ${release.architecture}` : 'for macOS and Windows'}</span></p>
+      <div className="hero-actions"><a className="button primary large" href={pricingEnabled ? "#pricing" : "#download"}>{pricingEnabled ? "Try Thoock" : "Download Thoock"} <ArrowUpRightIcon size={18} /></a><a className="text-link" href="#tutorial">Watch the walkthrough <ArrowDownIcon size={16} /></a></div>
+      <p className="hero-note">{pricingEnabled ? "Choose a trial or paid license to get started. Your own AI keys." : "Local workspace. Your own AI keys."}<span className="hero-release-info">v{latestUpdate.version} for macOS and Windows · AI provider usage billed separately.</span></p>
     </div>
     <div className="hero-scene">
       <div className="floating landscape-window" aria-hidden="true"><img src="/screenshots/dashboard-480.webp" loading="lazy" width="1200" height="829" alt="" /></div>
@@ -70,7 +67,7 @@ function WorkspaceSection() {
 }
 
 function DownloadPanel() {
-  return <section className="section container download-section" id="download" aria-labelledby="download-title"><div className="download-panel"><div className="download-copy"><div className="download-emblem"><img src="/thoock-icon.svg" width="72" height="72" alt="" /></div><h2 id="download-title">Make room for<br /> your next batch.</h2><p>Bring your stock-content production<br className="desktop-break" /> into one desktop workspace.</p><span className="download-detail"><CheckIcon size={15} /> No Thoock account needed</span><a className="latest-update-link" href="/changelog/"><span className="latest-update-version">Latest update: v{latestUpdate.version}</span><span>Updated {formatUpdateDate(latestUpdate.date)} <ArrowUpRightIcon size={12} /></span></a></div><div className="platforms">{releases.map(release => {
+  return <section className="section container download-section" id="download" aria-labelledby="download-title"><div className="download-panel"><div className="download-copy"><div className="download-emblem"><img src="/thoock-icon.svg" width="72" height="72" alt="" /></div><h2 id="download-title">Make room for<br /> your next batch.</h2><p>Already have a trial or paid license?<br className="desktop-break" /> Download the app and activate it with your key.</p><span className="download-detail"><CheckIcon size={15} /> Trial or paid license key required</span><a className="latest-update-link" href="/changelog/"><span className="latest-update-version">Latest update: v{latestUpdate.version}</span><span>Updated {formatUpdateDate(latestUpdate.date)} <ArrowUpRightIcon size={12} /></span></a></div><div className="platforms">{releases.map(release => {
     const Logo = release.platform === 'macOS' ? AppleLogoIcon : WindowsLogoIcon;
     return <div className="platform" key={release.platform}><span className="platform-logo"><Logo size={27} /></span><div className="platform-info"><h3>Thoock for {release.platform}</h3><p>{release.architecture} / v{release.version} / {formatFileSize(release.bytes)}</p></div>
       {release.available ? <a className="button primary platform-download" {...downloadAnalytics(release, 'downloads')} href={release.url} download={release.url.split('/').pop()}><DownloadSimpleIcon size={16} />Download for {release.platform}</a> : <span className="unavailable">Download not available yet</span>}
@@ -81,9 +78,10 @@ function DownloadPanel() {
 }
 
 function FAQ() {
-  return <section className="section faq-section container" id="faq"><div className="faq-heading"><span className="section-kicker">A few things to know</span><h2>Good questions.<br /> Straight answers.</h2><p>A little context before you<br className="desktop-break" /> make yourself at home.</p></div><div className="faq-items">{questions.map(([question, answer]) => <details key={question}><summary>{question}<span className="faq-caret"><CaretDownIcon size={17} /></span></summary><p>{answer}</p></details>)}</div></section>;
+  const { visible: pricingEnabled } = usePricingAvailability();
+  return <section className="section faq-section container" id="faq"><div className="faq-heading"><span className="section-kicker">A few things to know</span><h2>Good questions.<br /> Straight answers.</h2><p>A little context before you<br className="desktop-break" /> make yourself at home.</p></div><div className="faq-items">{questions.filter(([question]) => pricingEnabled || question !== "How do I try Thoock?").map(([question, answer]) => <details key={question}><summary>{question}<span className="faq-caret"><CaretDownIcon size={17} /></span></summary><p>{answer}</p></details>)}</div></section>;
 }
 
 export default function HomePage() {
-  return <main id="main"><Hero /><div className="workflow-bridge container"><span className="bridge-icon"><FileCsvIcon size={23} /></span><p>Good images start before the prompt.<br /> <strong>And the work doesn’t end at generate.</strong></p><span className="bridge-line" /><span className="bridge-end"><CheckCircleIcon size={19} /> That’s where Thoock comes in.</span></div><FeatureShowcase /><TutorialSection /><WorkspaceSection /><DownloadPanel /><FAQ /></main>;
+  return <main id="main"><Hero /><div className="workflow-bridge container"><span className="bridge-icon"><FileCsvIcon size={23} /></span><p>Good images start before the prompt.<br /> <strong>And the work doesn’t end at generate.</strong></p><span className="bridge-line" /><span className="bridge-end"><CheckCircleIcon size={19} /> That’s where Thoock comes in.</span></div><FeatureShowcase /><TutorialSection /><WorkspaceSection /><PricingSection /><DownloadPanel /><FAQ /></main>;
 }

@@ -4,6 +4,9 @@ test('download hover and press move the icon and label together', async ({ page 
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   await expect(page.locator('#root')).toHaveAttribute('data-hydrated', 'true');
+  // Keep the long scroll to the download section from moving the button out
+  // from under the pointer while this test measures its hover transform.
+  await page.evaluate(() => { document.documentElement.style.scrollBehavior = 'auto'; });
   const button = page.locator('.platform-download').first();
   await button.scrollIntoViewIfNeeded();
   await expect.poll(() => page.locator('.download-panel').evaluate(el => el.getAnimations().length)).toBe(0);
@@ -21,6 +24,9 @@ test('download hover and press move the icon and label together', async ({ page 
   await expect(button).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, -2)');
   expect(await alignment()).toBeCloseTo(before, 1);
   await expect(button.locator('svg')).toHaveCSS('transform', 'none');
+  const box = await button.boundingBox();
+  expect(box).not.toBeNull();
+  await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
   await page.mouse.down();
   await expect(button).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 1)');
   expect(await alignment()).toBeCloseTo(before, 1);

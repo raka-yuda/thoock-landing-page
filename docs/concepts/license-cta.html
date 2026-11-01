@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thoock license CTA concept</title>
+<style>
+@font-face{font-family:Geist;src:url('../../public/fonts/geist-latin-variable.woff2') format('woff2');font-weight:100 900;font-display:swap}
+*{box-sizing:border-box}body{margin:0;font-family:Geist,Arial,sans-serif;background:#edf3ef;color:#14231b}
+.shell{min-height:100vh;padding:28px 44px 54px;background:radial-gradient(circle at 86% 8%,#e4f0e9,transparent 35%),#edf3ef}
+.top{max-width:1280px;margin:0 auto 54px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:720;letter-spacing:-.05em}.brand img{width:35px;height:35px}.brand small{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#328367;border:1px solid #bddac9;background:#e2f5e9;border-radius:6px;padding:4px 6px}.nav{display:flex;align-items:center;gap:30px;color:#556d5c;font-size:12px}.nav b{color:#13251a}.nav .button{padding:11px 17px;color:#fff;background:#192720;border-radius:10px;box-shadow:inset 0 1px #ffffff33,0 3px 7px #12291a26}
+.stage{max-width:1170px;margin:0 auto}.eyebrow{font-size:11px;font-weight:680;letter-spacing:.14em;text-transform:uppercase;color:#14795a;display:flex;align-items:center;gap:9px}.eyebrow:before{content:'';width:8px;height:8px;border-radius:50%;background:#1aaf77;box-shadow:0 0 0 4px #d5eadd}
+h1{font-size:clamp(38px,5vw,70px);line-height:1.02;letter-spacing:-.067em;font-weight:680;max-width:850px;margin:20px 0 16px}h1 em{font-style:normal;color:#10815c}.lead{color:#60746a;font-size:17px;line-height:1.55;max-width:680px;margin:0 0 37px}
+.content{display:grid;grid-template-columns:1.12fr .88fr;gap:20px}.story,.offer{border-radius:22px;border:1px solid #cad9ce;box-shadow:0 14px 36px #355b4411,0 2px 3px #263e2b0b;min-width:0}
+.story{background:#f7faf6;padding:33px 35px;display:flex;flex-direction:column;justify-content:space-between;min-height:444px}.story h2{margin:0 0 23px;font-size:22px;letter-spacing:-.04em;font-weight:650}.steps{list-style:none;padding:0;margin:0}.steps li{display:flex;gap:17px;align-items:flex-start;padding:17px 0;border-top:1px solid #dce6de}.step-num{display:grid;place-items:center;flex:0 0 31px;height:31px;border-radius:9px;background:#e5f2e9;box-shadow:inset 0 1px #fff,0 1px 2px #2f5d3d1a;color:#147654;font-size:11px;font-weight:720}.step-copy b{display:block;font-size:14px;letter-spacing:-.01em}.step-copy span{display:block;color:#708379;font-size:12px;line-height:1.5;margin-top:5px}.story-bottom{display:flex;gap:12px;align-items:center;padding-top:15px;color:#547264;font-size:11px}.story-bottom .spark{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;background:#e5f2e9;color:#008559;font-weight:700}
+.offer{background:#20372a;color:#eaf4eb;padding:30px 32px;position:relative;overflow:hidden;box-shadow:inset 0 1px #ffffff2f,0 16px 34px #163a2430}.offer:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 95% 0%,#4c775033,transparent 45%);pointer-events:none}.offer>*{position:relative}.tag{width:max-content;padding:6px 9px;border:1px solid #7db49570;border-radius:7px;background:#2f5440;color:#9de1b6;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}.offer h2{font-size:29px;letter-spacing:-.05em;margin:20px 0 7px}.offer>p{color:#b3c6b8;font-size:13px;line-height:1.6;margin:0}.price{display:flex;align-items:baseline;gap:12px;margin:30px 0 5px;font-size:43px;font-weight:690;letter-spacing:-.06em}.price small{font-size:12px;font-weight:480;letter-spacing:0;color:#b8ceb9}.line{height:1px;background:#68847460;margin:21px 0}.check{display:flex;gap:9px;align-items:center;color:#d1e2d3;font-size:12px;margin:11px 0}.check span{color:#76d49b;font-size:16px}.cta{display:flex;gap:9px;margin:24px 0 12px}.cta a{text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;min-height:49px;border-radius:11px;font-size:13px;font-weight:690;white-space:nowrap}.cta .primary{flex:1.1;background:#dcf2e2;color:#183b26;box-shadow:inset 0 1px #fff,0 3px 7px #07170b52}.cta .secondary{flex:.9;border:1px solid #88a18e70;color:#e5f1e7;background:#ffffff0a}.fine{font-size:10px!important;line-height:1.5!important;color:#a4b8a9!important;text-align:center}
+@media(max-width:800px){.shell{padding:22px 18px 42px}.top{margin-bottom:45px}.nav a:not(.button){display:none}.nav .button{padding:10px 12px}.stage{max-width:580px}h1{font-size:46px}.lead{font-size:15px;margin-bottom:25px}.content{grid-template-columns:1fr}.offer{order:-1}.story{min-height:auto}.cta{flex-direction:column}.cta a{width:100%}}
+@media(max-width:420px){.shell{padding:18px 15px 35px}.top{margin-bottom:42px}.brand{font-size:17px}h1{font-size:41px}.offer,.story{padding:24px 22px;border-radius:18px}.price{font-size:38px}.nav .button{font-size:11px}}
+</style>
+<div class="shell">
+  <header class="top"><div class="brand"><img src="../../public/thoock-icon.svg" alt="">Thoock <small>Beta</small></div><nav class="nav"><a>Workflow</a><b>Pricing</b><a>Changelog</a><span class="button">Download app ↘</span></nav></header>
+  <main class="stage">
+    <div class="eyebrow">One workspace. One license.</div>
+    <h1>Make the work yours.<br><em>Keep the workflow.</em></h1>
+    <p class="lead">Research opportunities, prepare images, review every detail, and export from one desktop workspace. Bring the AI keys you already use.</p>
+    <div class="content">
+      <section class="story">
+        <div><h2>From purchase to production.</h2><ol class="steps">
+          <li><span class="step-num">01</span><div class="step-copy"><b>Get your license</b><span>Checkout sends a personal key to your email.</span></div></li>
+          <li><span class="step-num">02</span><div class="step-copy"><b>Download Thoock</b><span>Choose the installer for your desktop.</span></div></li>
+          <li><span class="step-num">03</span><div class="step-copy"><b>Activate and make things</b><span>Enter your key when you open the app.</span></div></li>
+        </ol></div>
+        <div class="story-bottom"><span class="spark">✳</span> Your workspace and files stay on your computer.</div>
+      </section>
+      <section class="offer"><span class="tag">Lifetime access</span><h2>Thoock Lifetime License</h2><p>One payment for the desktop workspace.<br>No Thoock subscription.</p><div class="price">Rp 262.500 <small>one time</small></div><div class="line"></div><div class="check"><span>✓</span> All current desktop workflows</div><div class="check"><span>✓</span> License delivered after payment</div><div class="check"><span>✓</span> Bring your own AI provider keys</div><div class="cta"><a class="primary">Get lifetime license <span>↗</span></a><a class="secondary">Download app <span>↓</span></a></div><p class="fine">A license is required to activate the app. AI provider usage is billed separately.</p></section>
+    </div>
+  </main>
+</div>
+</html>

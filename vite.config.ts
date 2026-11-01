@@ -27,6 +27,7 @@ function umamiAnalytics(): Plugin {
 }
 
 export default defineConfig({
+  server: { port: 3001, strictPort: true },
   plugins: [
     umamiAnalytics(),
     react(),

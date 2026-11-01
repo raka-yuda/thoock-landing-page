@@ -14,6 +14,8 @@ test('built pages deliver correct HTML and usable downloads without JavaScript',
 
 test('built routes hydrate without replacing mismatched HTML or losing interactions',async({browser})=>{
   const page=await browser.newPage({colorScheme:'dark',reducedMotion:'reduce'});
+  // Hydration checks must not depend on a running payment service.
+  await page.route('**/api/pricing', route => route.fulfill({ json: { products: [] } }));
   const errors:string[]=[];
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});

@@ -32,22 +32,21 @@ test('prerendered installer links carry readable titles and release properties w
   await page.close();
 });
 
-test('hydrated desktop hero is labelled while mobile download navigation is not counted', async ({ browser }) => {
-  for (const [userAgent, platform] of [
-    ['Mozilla/5.0 (Windows NT 10.0; Win64; x64)', 'Windows'],
-    ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 'macOS'],
-    ['Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', null],
-  ] as const) {
+test('license navigation never counts as an installer download on desktop or mobile', async ({ browser }) => {
+  for (const userAgent of [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)',
+  ]) {
     const page = await browser.newPage({ userAgent });
     await page.goto(production);
     await expect(page.locator('#root')).toHaveAttribute('data-hydrated', 'true');
-    const hero = page.locator('.hero-actions .primary');
-    if (platform) {
-      await expect(hero).toHaveAttribute('data-umami-event', 'desktop-download');
-      await expect(hero).toHaveAttribute('data-umami-event-source', 'hero');
-      await expect(hero).toHaveAttribute('data-umami-event-platform', platform);
-    } else {
-      await expect(hero).not.toHaveAttribute('data-umami-event');
+    await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href', /^#(?:pricing|download)$/);
+    await expect(page.locator('.hero-actions .primary')).not.toHaveAttribute('data-umami-event');
+    await expect(page.locator('.nav-download')).not.toHaveAttribute('data-umami-event');
+    for (const link of await page.locator('#download .platform-download').all()) {
+      await expect(link).toHaveAttribute('data-umami-event', 'desktop-download');
+      await expect(link).toHaveAttribute('data-umami-event-source', 'downloads');
     }
     await page.close();
   }
