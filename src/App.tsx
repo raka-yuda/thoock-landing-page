@@ -3,7 +3,6 @@ import { BetaBadge } from './BetaBadge';
 import { latestUpdate } from './changelog';
 import type { ReactNode } from 'react';
 import ArrowUpRightIcon from 'lucide-react/dist/esm/icons/arrow-up-right.mjs';
-import DownloadSimpleIcon from 'lucide-react/dist/esm/icons/download.mjs';
 import MoonIcon from 'lucide-react/dist/esm/icons/moon.mjs';
 import SunIcon from 'lucide-react/dist/esm/icons/sun.mjs';
 import { useEntranceMotion } from './useEntranceMotion';
@@ -19,11 +18,11 @@ function ThemeToggle() {
 }
 
 function Header({ changelogPage = false }: { changelogPage?: boolean }) {
-  return <header className="header"><div className="header-inner"><div className="header-brand"><Brand /><BetaBadge version={latestUpdate.version} /></div><nav aria-label="Main navigation"><a href="/#workflow">Workflow</a><a href="/#workspace">Your workspace</a><a href="/changelog/" aria-current={changelogPage ? 'page' : undefined}>Changelog</a><a href="/#faq">FAQ</a></nav><div className="header-actions"><ThemeToggle /><a className="button primary nav-download" aria-label="Download Thoock" href="/#download"><DownloadSimpleIcon size={17} /><span className="nav-download-label">Download<span className="nav-download-name"> Thoock</span></span></a></div></div></header>;
+  return <header className="header"><div className="header-inner"><div className="header-brand"><Brand /><BetaBadge version={latestUpdate.version} /></div><nav aria-label="Main navigation"><a href="/#workflow">Workflow</a><a href="/#workspace">Your workspace</a><a href="/#pricing">Pricing</a><a href="/changelog/" aria-current={changelogPage ? 'page' : undefined}>Changelog</a><a href="/#faq">FAQ</a></nav><div className="header-actions"><ThemeToggle /><a className="button primary nav-download" aria-label="Try Thoock" href="/#pricing"><span className="nav-download-label">Try Thoock</span><ArrowUpRightIcon size={16} /></a></div></div></header>;
 }
 
 function Footer() {
-  return <footer className="footer container"><div className="footer-top"><Brand small /><p>A desktop workspace for stock-photo and footage creators.</p><a href="/changelog/" className="text-link footer-changelog">Changelog <ArrowUpRightIcon size={15} /></a><a href="#top" className="text-link">Back to top <ArrowUpRightIcon size={15} /></a></div><div className="footer-bottom"><span>Made for the work between an idea and an image.</span><span>Independent of stock agencies. Built for your workflow.</span></div></footer>;
+  return <footer className="footer container"><div className="footer-top"><Brand small /><p>A desktop workspace for stock-photo and footage creators.</p><a className="text-link" href="/#download">Downloads</a><a href="/changelog/" className="text-link footer-changelog">Changelog <ArrowUpRightIcon size={15} /></a><a href="#top" className="text-link">Back to top <ArrowUpRightIcon size={15} /></a></div><div className="footer-bottom"><span>Made for the work between an idea and an image.</span><span>Independent of stock agencies. Built for your workflow.</span></div></footer>;
 }
 export default function App({ pathname, children, onHydrated }: { pathname?: string; children: ReactNode; onHydrated?: () => void }) {
   const path = pathname ?? (typeof window === 'undefined' ? '/' : window.location.pathname);

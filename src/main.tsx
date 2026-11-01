@@ -1,6 +1,7 @@
 import './fonts.css';
 import './style.css';
 import './features.css';
+import './pricing.css';
 
 // The static HTML is already usable. Keep React off the first-paint path and
 // attach the interactive layer after the browser has drawn that HTML.

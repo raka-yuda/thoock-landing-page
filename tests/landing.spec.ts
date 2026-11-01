@@ -28,7 +28,7 @@ test('theme persists, FAQ opens, and preview downloads show their platform detai
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
   await page.getByText('Does it upload to Adobe Stock for me?',{exact:true}).click();
   await expect(page.locator('details[open]')).toContainText('upload it manually');
-  await page.locator('.nav-download').click();
+  await page.locator('.pricing-existing a').click();
   await expect(page).toHaveURL(/#download$/);
   await expect(page.locator('#download .platform-download')).toHaveCount(2);
   await expect(page.locator('#download .unavailable')).toHaveCount(0);
@@ -41,8 +41,10 @@ test('page fits supported widths in both themes without broken images', async ({
   page.on('pageerror', error=>errors.push(error.message));
   for(const width of [320,375,390,768,1024,1280,1440]) {
     await page.setViewportSize({width,height:900});
-    await page.goto('/');
+    // Validate shipped layout without development-server reloads interrupting lazy images.
+    await page.goto('http://127.0.0.1:4173/');
     await page.evaluate(async()=>{ await document.fonts.ready; });
+    await expect(page.locator('#root')).toHaveAttribute('data-hydrated', 'true');
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`overflow at ${width}`).toBe(true);
     await expect(page.getByRole('heading',{level:1})).toBeVisible();
     expect(await page.locator('.hero-actions .primary').evaluate(el=>el.getBoundingClientRect().bottom)).toBeLessThan(900);
@@ -67,7 +69,7 @@ test('reduced motion and mobile platform visitors remain usable',async({page})=>
   await expect(page.locator('#root')).toHaveAttribute('data-hydrated','true');
   await expect(page.locator('.feature-replay')).toHaveCount(0);
   await expect(page.getByRole('heading',{name:'Make the possibilities. Keep the ones that matter.'})).toBeVisible();
-  await page.locator('.nav-download').click();
+  await page.locator('.pricing-existing a').click();
   await expect(page.getByRole('heading',{name:'Make room for your next batch.'})).toBeVisible();
 });
 
@@ -159,20 +161,21 @@ test('installer links download the exact artifacts from the supplied manifest',a
   expect(await checksums.text()).toContain(manifest.artifacts[0].sha256);
 });
 
-test('hero offers the matching desktop installer and keeps mobile on download options',async({browser})=>{
-  const manifest = await currentRelease();
-  for(const [userAgent,label,href] of [
-    ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)','Download for macOS',manifest.downloads['darwin-aarch64'].url],
-    ['Mozilla/5.0 (Windows NT 10.0; Win64; x64)','Download for Windows',(await currentRelease()).downloads['windows-x86_64'].url],
-    ['Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)','View desktop downloads','#download'],
+test('hero routes desktop and mobile visitors to license choices before downloading',async({browser})=>{
+  for(const userAgent of [
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)',
   ]) {
     const page=await browser.newPage({userAgent,reducedMotion:'reduce'});
     await page.goto('http://127.0.0.1:5173');
     const action=page.locator('.hero-actions .primary');
-    await expect(action).toHaveText(label);
-    await expect(action).toHaveAttribute('href',href);
-    if(userAgent.includes('Macintosh')) await expect(page.locator('.hero-release-info')).toContainText('Apple silicon (ARM64)');
-    if(userAgent.includes('iPhone')) expect(await action.getAttribute('download')).toBeNull();
+    await expect(action).toHaveText('Try Thoock');
+    await expect(action).toHaveAttribute('href','#pricing');
+    await expect(action).not.toHaveAttribute('download');
+    await action.click();
+    await expect(page).toHaveURL(/#pricing$/);
+    await expect(page.locator('#download .platform-download')).toHaveCount(2);
     await page.close();
   }
 });
@@ -203,16 +206,18 @@ test('meaningful page content and downloads are present before React or JavaScri
 
 test('hydration keeps dark appearance and platform downloads without recoverable errors', async ({browser})=>{
   const page=await browser.newPage({colorScheme:'dark',userAgent:'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'});
+  await page.route('**/api/pricing', route => route.fulfill({ status: 200, contentType: 'application/json', body: '{"products":[]}' }));
   const errors:string[]=[];
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
   await page.goto('http://127.0.0.1:5173');
-  await expect(page.locator('.hero-actions .primary')).toHaveText('Download for Windows');
+  await expect(page.locator('.hero-actions .primary')).toHaveText('Try Thoock');
   await expect(page.getByRole('button',{name:'Switch to light appearance'})).toBeVisible();
   await page.getByRole('button',{name:'Switch to light appearance'}).click();
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
-  await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href',(await currentRelease()).downloads['windows-x86_64'].url);
+  await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href','#pricing');
+  await expect(page.locator('#download .platform-download').last()).toHaveAttribute('href',(await currentRelease()).downloads['windows-x86_64'].url);
   expect(errors).toEqual([]);
   await page.close();
 });
