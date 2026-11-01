@@ -1,3 +1,4 @@
+import { usePricingAvailability } from '../PricingAvailability';
 import { downloadAnalytics } from '../analytics';
 import ArrowDownIcon from 'lucide-react/dist/esm/icons/arrow-down.mjs';
 import ArrowDownRightIcon from 'lucide-react/dist/esm/icons/arrow-down-right.mjs';
@@ -36,12 +37,13 @@ const questions = [
 
 
 function Hero() {
+  const { visible: pricingEnabled } = usePricingAvailability();
   return <section className="hero" aria-labelledby="hero-title">
     <div className="hero-copy"><div className="app-emblem"><img src="/thoock-icon.svg" alt="" width="76" height="76" /></div>
       <h1 id="hero-title">Your stock-content workflow.<br /> <span>All together.</span></h1>
       <p>Research the opportunity. Shape the brief. Generate or import images, review the results, and prepare an Adobe Stock package.</p>
-      <div className="hero-actions"><a className="button primary large" href="#pricing">Try Thoock <ArrowUpRightIcon size={18} /></a><a className="text-link" href="#tutorial">Watch the walkthrough <ArrowDownIcon size={16} /></a></div>
-      <p className="hero-note">Choose a trial or paid license to get started. Your own AI keys.<span className="hero-release-info">v{latestUpdate.version} for macOS and Windows · AI provider usage billed separately.</span></p>
+      <div className="hero-actions"><a className="button primary large" href={pricingEnabled ? "#pricing" : "#download"}>{pricingEnabled ? "Try Thoock" : "Download Thoock"} <ArrowUpRightIcon size={18} /></a><a className="text-link" href="#tutorial">Watch the walkthrough <ArrowDownIcon size={16} /></a></div>
+      <p className="hero-note">{pricingEnabled ? "Choose a trial or paid license to get started. Your own AI keys." : "Local workspace. Your own AI keys."}<span className="hero-release-info">v{latestUpdate.version} for macOS and Windows · AI provider usage billed separately.</span></p>
     </div>
     <div className="hero-scene">
       <div className="floating landscape-window" aria-hidden="true"><img src="/screenshots/dashboard-480.webp" loading="lazy" width="1200" height="829" alt="" /></div>
@@ -76,7 +78,8 @@ function DownloadPanel() {
 }
 
 function FAQ() {
-  return <section className="section faq-section container" id="faq"><div className="faq-heading"><span className="section-kicker">A few things to know</span><h2>Good questions.<br /> Straight answers.</h2><p>A little context before you<br className="desktop-break" /> make yourself at home.</p></div><div className="faq-items">{questions.map(([question, answer]) => <details key={question}><summary>{question}<span className="faq-caret"><CaretDownIcon size={17} /></span></summary><p>{answer}</p></details>)}</div></section>;
+  const { visible: pricingEnabled } = usePricingAvailability();
+  return <section className="section faq-section container" id="faq"><div className="faq-heading"><span className="section-kicker">A few things to know</span><h2>Good questions.<br /> Straight answers.</h2><p>A little context before you<br className="desktop-break" /> make yourself at home.</p></div><div className="faq-items">{questions.filter(([question]) => pricingEnabled || question !== "How do I try Thoock?").map(([question, answer]) => <details key={question}><summary>{question}<span className="faq-caret"><CaretDownIcon size={17} /></span></summary><p>{answer}</p></details>)}</div></section>;
 }
 
 export default function HomePage() {

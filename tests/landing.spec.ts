@@ -28,7 +28,7 @@ test('theme persists, FAQ opens, and preview downloads show their platform detai
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
   await page.getByText('Does it upload to Adobe Stock for me?',{exact:true}).click();
   await expect(page.locator('details[open]')).toContainText('upload it manually');
-  await page.locator('.pricing-existing a').click();
+  await page.locator('.nav-download').click();
   await expect(page).toHaveURL(/#download$/);
   await expect(page.locator('#download .platform-download')).toHaveCount(2);
   await expect(page.locator('#download .unavailable')).toHaveCount(0);
@@ -69,7 +69,7 @@ test('reduced motion and mobile platform visitors remain usable',async({page})=>
   await expect(page.locator('#root')).toHaveAttribute('data-hydrated','true');
   await expect(page.locator('.feature-replay')).toHaveCount(0);
   await expect(page.getByRole('heading',{name:'Make the possibilities. Keep the ones that matter.'})).toBeVisible();
-  await page.locator('.pricing-existing a').click();
+  await page.locator('.nav-download').click();
   await expect(page.getByRole('heading',{name:'Make room for your next batch.'})).toBeVisible();
 });
 
@@ -161,7 +161,7 @@ test('installer links download the exact artifacts from the supplied manifest',a
   expect(await checksums.text()).toContain(manifest.artifacts[0].sha256);
 });
 
-test('hero routes desktop and mobile visitors to license choices before downloading',async({browser})=>{
+test('hero routes desktop and mobile visitors to downloads when pricing is unconfigured',async({browser})=>{
   for(const userAgent of [
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
@@ -170,11 +170,11 @@ test('hero routes desktop and mobile visitors to license choices before download
     const page=await browser.newPage({userAgent,reducedMotion:'reduce'});
     await page.goto('http://127.0.0.1:5173');
     const action=page.locator('.hero-actions .primary');
-    await expect(action).toHaveText('Try Thoock');
-    await expect(action).toHaveAttribute('href','#pricing');
+    await expect(action).toHaveText('Download Thoock');
+    await expect(action).toHaveAttribute('href','#download');
     await expect(action).not.toHaveAttribute('download');
     await action.click();
-    await expect(page).toHaveURL(/#pricing$/);
+    await expect(page).toHaveURL(/#download$/);
     await expect(page.locator('#download .platform-download')).toHaveCount(2);
     await page.close();
   }
@@ -211,12 +211,12 @@ test('hydration keeps dark appearance and platform downloads without recoverable
   page.on('pageerror',error=>errors.push(error.message));
   page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
   await page.goto('http://127.0.0.1:5173');
-  await expect(page.locator('.hero-actions .primary')).toHaveText('Try Thoock');
+  await expect(page.locator('.hero-actions .primary')).toHaveText('Download Thoock');
   await expect(page.getByRole('button',{name:'Switch to light appearance'})).toBeVisible();
   await page.getByRole('button',{name:'Switch to light appearance'}).click();
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme','light');
-  await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href','#pricing');
+  await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href','#download');
   await expect(page.locator('#download .platform-download').last()).toHaveAttribute('href',(await currentRelease()).downloads['windows-x86_64'].url);
   expect(errors).toEqual([]);
   await page.close();
@@ -306,4 +306,21 @@ test('three visual stories preserve whole windows and open detailed previews on 
     await expect(trigger).toBeFocused();
     await expect(page.locator('.image-dialog img')).toHaveCount(0);
   }
+});
+
+
+test('missing payment URL hides pricing before and after hydration without fetching it', async ({ page, browser }) => {
+  const pricingRequests: string[] = [];
+  page.on('request', request => { if (request.url().includes('/api/pricing')) pricingRequests.push(request.url()); });
+  await page.goto('/');
+  await expect(page.locator('#root')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('#pricing')).toHaveCount(0);
+  await expect(page.locator('a[href$="#pricing"]')).toHaveCount(0);
+  await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href', '#download');
+  expect(pricingRequests).toEqual([]);
+  const staticPage = await browser.newPage({ javaScriptEnabled: false });
+  await staticPage.goto('http://127.0.0.1:5173/');
+  await expect(staticPage.locator('#pricing')).toHaveCount(0);
+  await expect(staticPage.locator('a[href$="#pricing"]')).toHaveCount(0);
+  await staticPage.close();
 });

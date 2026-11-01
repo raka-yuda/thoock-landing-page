@@ -1,3 +1,6 @@
+export const configuredPaymentOrigin = import.meta.env.VITE_PAYMENT_BASE_URL?.trim();
+export const pricingEnabled = Boolean(configuredPaymentOrigin);
+
 export type Promotion = {
   code: string;
   name: string;

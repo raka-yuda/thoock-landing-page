@@ -1,3 +1,4 @@
+import { PricingAvailabilityProvider, usePricingAvailability } from './PricingAvailability';
 import { useEffect } from 'react';
 import { BetaBadge } from './BetaBadge';
 import { latestUpdate } from './changelog';
@@ -18,7 +19,8 @@ function ThemeToggle() {
 }
 
 function Header({ changelogPage = false }: { changelogPage?: boolean }) {
-  return <header className="header"><div className="header-inner"><div className="header-brand"><Brand /><BetaBadge version={latestUpdate.version} /></div><nav aria-label="Main navigation"><a href="/#workflow">Workflow</a><a href="/#workspace">Your workspace</a><a href="/#pricing">Pricing</a><a href="/changelog/" aria-current={changelogPage ? 'page' : undefined}>Changelog</a><a href="/#faq">FAQ</a></nav><div className="header-actions"><ThemeToggle /><a className="button primary nav-download" aria-label="Try Thoock" href="/#pricing"><span className="nav-download-label">Try Thoock</span><ArrowUpRightIcon size={16} /></a></div></div></header>;
+  const { visible: pricingEnabled } = usePricingAvailability();
+  return <header className="header"><div className="header-inner"><div className="header-brand"><Brand /><BetaBadge version={latestUpdate.version} /></div><nav aria-label="Main navigation"><a href="/#workflow">Workflow</a><a href="/#workspace">Your workspace</a>{pricingEnabled && <a href="/#pricing">Pricing</a>}<a href="/changelog/" aria-current={changelogPage ? 'page' : undefined}>Changelog</a><a href="/#faq">FAQ</a></nav><div className="header-actions"><ThemeToggle /><a className="button primary nav-download" aria-label={pricingEnabled ? "Try Thoock" : "Download Thoock"} href={pricingEnabled ? "/#pricing" : "/#download"}><span className="nav-download-label">{pricingEnabled ? "Try Thoock" : <>Download<span className="nav-download-name"> Thoock</span></>}</span><ArrowUpRightIcon size={16} /></a></div></div></header>;
 }
 
 function Footer() {
@@ -42,5 +44,5 @@ export default function App({ pathname, children, onHydrated }: { pathname?: str
       return () => window.removeEventListener('hashchange', redirectLegacyLink);
     }
   }, [changelogPage]);
-  return <><a className="skip-link" href="#main">Skip to content</a><div id="top" /><Header changelogPage={changelogPage} />{children}<Footer /></>;
+  return <PricingAvailabilityProvider><a className="skip-link" href="#main">Skip to content</a><div id="top" /><Header changelogPage={changelogPage} />{children}<Footer /></PricingAvailabilityProvider>;
 }

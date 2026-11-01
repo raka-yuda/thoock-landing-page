@@ -78,21 +78,13 @@ test('never offers checkout when the service disables it or returns a mismatched
   await expect(page.locator('#pricing .pricing-unavailable')).toHaveCount(2);
 });
 
-test('keeps pricing unavailable on service failure and recovers on retry', async ({ page }) => {
-  let recovered = false;
-  await page.route(`${paymentOrigin}/api/pricing`, route => {
-    return route.fulfill(!recovered
-      ? { status: 503, contentType: 'application/json', body: '{"code":"pricing_unavailable"}' }
-      : { status: 200, contentType: 'application/json', body: JSON.stringify({ products: [product] }) });
-  });
-  await page.setViewportSize({ width: 390, height: 844 });
+test('hides pricing and returns navigation to downloads when the service fails', async ({ page }) => {
+  await page.route(`${paymentOrigin}/api/pricing`, route => route.fulfill({ status: 503, json: {} }));
   await page.goto(siteUrl);
-  await expect(page.locator('#pricing')).toContainText('Pricing is temporarily unavailable');
-  await expect(page.locator('#pricing .pricing-buy')).toHaveCount(0);
-  recovered = true;
-  await page.locator('#pricing').getByRole('button', { name: 'Try again' }).click();
-  await expect(page.locator('#pricing .pricing-buy')).toHaveCount(1);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await expect(page.locator('#root')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href', '#download');
+  await expect(page.locator('#pricing')).toHaveCount(0);
+  await expect(page.locator('a[href$="#pricing"]')).toHaveCount(0);
 });
 
 test('accepts a zero-price trial alongside paid pricing and preserves separate checkout identities', async ({ page }) => {
@@ -145,6 +137,17 @@ test('a disabled or unsafe trial URL never becomes a claim link', async ({ page 
 test('negative prices are rejected rather than presented as free trials', async ({ page }) => {
   await page.route(`${paymentOrigin}/api/pricing`, route => route.fulfill({ json: { products: [{ ...trial, pricing: { ...trial.pricing, amount: -1 } }] } }));
   await page.goto(siteUrl);
-  await expect(page.locator('#pricing')).toContainText('Pricing is temporarily unavailable');
+  await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href', '#download');
+  await expect(page.locator('#pricing')).toHaveCount(0);
   await expect(page.locator('#pricing .pricing-buy')).toHaveCount(0);
+});
+
+test('hides pricing if the service does not respond within eight seconds', async ({ page }) => {
+  await page.clock.install();
+  await page.route(`${paymentOrigin}/api/pricing`, () => {});
+  await page.goto(siteUrl);
+  await expect(page.locator('#root')).toHaveAttribute('data-hydrated', 'true');
+  await page.clock.fastForward(8100);
+  await expect(page.locator('#pricing')).toHaveCount(0);
+  await expect(page.locator('.nav-download')).toHaveAttribute('href', '/#download');
 });

@@ -1,17 +1,16 @@
+import { usePricingAvailability } from '../PricingAvailability';
 import { useEffect, useState } from 'react';
 import ArrowUpRightIcon from 'lucide-react/dist/esm/icons/arrow-up-right.mjs';
 import CheckIcon from 'lucide-react/dist/esm/icons/check.mjs';
-import RefreshCwIcon from 'lucide-react/dist/esm/icons/refresh-cw.mjs';
 import SearchIcon from 'lucide-react/dist/esm/icons/search.mjs';
 import BookIcon from 'lucide-react/dist/esm/icons/book-open.mjs';
 import ImagesIcon from 'lucide-react/dist/esm/icons/images.mjs';
 import ScanIcon from 'lucide-react/dist/esm/icons/scan-eye.mjs';
 import FileIcon from 'lucide-react/dist/esm/icons/file-spreadsheet.mjs';
 import FolderIcon from 'lucide-react/dist/esm/icons/folder.mjs';
-import { checkoutHref, formatIdr, parseCatalog, paymentOrigin, type CatalogProduct } from '../pricing';
+import { configuredPaymentOrigin, pricingEnabled, checkoutHref, formatIdr, parseCatalog, paymentOrigin, type CatalogProduct } from '../pricing';
 
-type PricingState = { status: 'loading' | 'unavailable' | 'unconfigured' } | { status: 'ready'; products: CatalogProduct[] };
-const configuredPaymentOrigin = import.meta.env.VITE_PAYMENT_BASE_URL ?? (import.meta.env.DEV ? 'http://localhost:3000' : undefined);
+type PricingState = { status: 'loading' } | { status: 'ready'; products: CatalogProduct[] };
 const strengths = [
   { icon: SearchIcon, title: 'Find a direction', copy: 'Research opportunities and keep promising topics close to the work.' },
   { icon: BookIcon, title: 'Give each batch a brief', copy: 'Turn ideas into commercial briefs before you start creating.' },
@@ -40,30 +39,33 @@ function Offer({ product, payment, localPage }: { product: CatalogProduct; payme
 
 export default function PricingSection() {
   const [state, setState] = useState<PricingState>({ status: 'loading' });
-  const [attempt, setAttempt] = useState(0);
+  const { visible, setVisible } = usePricingAvailability();
   useEffect(() => {
+    if (!pricingEnabled) return;
     const payment = paymentOrigin(configuredPaymentOrigin, window.location.href);
-    if (!payment) { setState({ status: 'unconfigured' }); return; }
+    if (!payment) { setVisible(false); return; }
     const controller = new AbortController();
     setState({ status: 'loading' });
+    const timeout = window.setTimeout(() => { setVisible(false); controller.abort(); }, 8000);
     fetch(new URL('/api/pricing', payment), { cache: 'no-store', signal: controller.signal })
       .then(async response => {
         if (!response.ok) throw new Error(`Pricing request failed: ${response.status}`);
         return parseCatalog(await response.json());
       })
-      .then(products => setState({ status: 'ready', products }))
-      .catch(() => { if (!controller.signal.aborted) setState({ status: 'unavailable' }); });
-    return () => controller.abort();
-  }, [attempt]);
+      .then(products => { if (!controller.signal.aborted) { setState({ status: 'ready', products }); setVisible(products.length > 0); } })
+      .catch(() => { if (!controller.signal.aborted) setVisible(false); })
+      .finally(() => window.clearTimeout(timeout));
+    return () => { window.clearTimeout(timeout); controller.abort(); };
+  }, [setVisible]);
   const payment = typeof window === 'undefined' ? null : paymentOrigin(configuredPaymentOrigin, window.location.href);
   const localPage = typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname);
   // Keep trial first regardless of the catalog's creation order. IDs and terms remain API-owned.
   const products = state.status === 'ready' ? [...state.products].sort((a, b) => Number(b.licenseTerms.entitlement === 'trial') - Number(a.licenseTerms.entitlement === 'trial')) : [];
+  if (!visible) return null;
   return <section className="section pricing-section container" id="pricing" aria-labelledby="pricing-title">
     <div className="pricing-heading"><span className="section-kicker">A workspace for your whole process</span><h2 id="pricing-title">Find your flow.<br />Make it yours.</h2><p>From the first opportunity to the final package. Choose a license, get your key, and bring your next batch into Thoock.</p></div>
     <div className="pricing-offers" aria-live="polite" aria-busy={state.status === 'loading'}>
       {state.status === 'loading' && <div className="pricing-panel pricing-loading" role="status"><span className="pricing-placeholder pricing-placeholder-title" /><span className="pricing-placeholder pricing-placeholder-copy" /><span className="pricing-placeholder pricing-placeholder-price" /><span className="pricing-placeholder pricing-placeholder-button" /><span className="sr-only">Checking current pricing</span></div>}
-      {(state.status === 'unavailable' || state.status === 'unconfigured') && <div className="pricing-panel pricing-message" role="status"><div><h3>Pricing is temporarily unavailable.</h3><p>Please check back for available licenses. Already have a key? You can download the app below.</p></div>{state.status === 'unavailable' && <button className="button" type="button" onClick={() => setAttempt(value => value + 1)}><RefreshCwIcon size={16} />Try again</button>}</div>}
       {state.status === 'ready' && (products.length ? products.map(product => <Offer key={product.id} product={product} payment={payment} localPage={localPage} />) : <div className="pricing-panel pricing-message"><div><h3>No licenses available right now.</h3><p>Check back for available licenses. Existing license holders can still download the app.</p></div></div>)}
     </div>
     <div className="pricing-strengths"><h3>More than a place to add keywords.</h3><div className="pricing-strengths-grid">{strengths.map(({ icon: Icon, title, copy }) => <div className="pricing-strength" key={title}><span className="material-icon"><Icon size={20} /></span><div><h4>{title}</h4><p>{copy}</p></div></div>)}</div><p className="pricing-provider-note">Bring your own AI keys. The license covers Thoock; AI provider usage is billed separately. Provider-backed actions send relevant content to the service you choose.</p></div>

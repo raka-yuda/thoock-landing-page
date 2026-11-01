@@ -41,7 +41,7 @@ test('license navigation never counts as an installer download on desktop or mob
     const page = await browser.newPage({ userAgent });
     await page.goto(production);
     await expect(page.locator('#root')).toHaveAttribute('data-hydrated', 'true');
-    await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href', '#pricing');
+    await expect(page.locator('.hero-actions .primary')).toHaveAttribute('href', /^#(?:pricing|download)$/);
     await expect(page.locator('.hero-actions .primary')).not.toHaveAttribute('data-umami-event');
     await expect(page.locator('.nav-download')).not.toHaveAttribute('data-umami-event');
     for (const link of await page.locator('#download .platform-download').all()) {
