@@ -92,7 +92,7 @@ To configure delivery to your VM:
 
 `scripts/wait-for-http.sh` waits for the smoke-test container to serve its health endpoint, retrying connection resets, empty responses, and other startup errors within a bounded retry budget. `npm run test:readiness` checks immediate success, transient resets, and persistent failure using real HTTP connections.
 
-CI uploads its tested Docker image, transfers it over SSH, and starts that exact commit-tagged image with Compose. Deployment waits for container health and reports failures; it does not stop the existing service before building or modify the portfolio's proxy. Existing images remain available for a manual rollback. Local container verification uses `docker build -t thoock-landing-page:latest .` and `docker compose up -d --wait`.
+CI uploads its tested Docker image, transfers it over SSH, and starts that exact commit-tagged image with Compose. Deployment waits for container health and reports failures; it does not stop the existing service before building or modify the portfolio's proxy. After a healthy deployment, cleanup retains the current image and the image used by the previous deployment for manual rollback. It only removes older commit-tagged `thoock-landing-page` images; images referenced by any running or stopped container are protected. Failed deployments do not clean up images. Cleanup never uses force or a host-wide prune, so portfolio and other application images are untouched. On a first deployment, one extra recent image is retained if available. Cleanup failures produce a warning without failing a healthy deployment. Local container verification uses `docker build -t thoock-landing-page:latest .` and `docker compose up -d --wait`.
 
 ## React page structure
 

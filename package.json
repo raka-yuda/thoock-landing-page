@@ -10,6 +10,7 @@
     "test": "npm run build && playwright test",
     "assets:optimize": "node scripts/optimize-screenshots.mjs",
     "test:readiness": "node --test scripts/wait-for-http.test.mjs",
+    "test:deploy": "node --test scripts/deploy.test.mjs",
     "release:check": "node scripts/check-release.mjs",
     "release:stage": "node scripts/stage-desktop-release.mjs",
     "test:release": "node --test scripts/check-release-http.test.mjs",
