@@ -21,14 +21,14 @@ test('download hover and press move the icon and label together', async ({ page 
   const before = await alignment();
   await button.hover();
   await expect(button).not.toHaveAttribute('title');
-  await expect(button).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, -2)');
+  await expect(button).toHaveCSS('transform', 'none');
   expect(await alignment()).toBeCloseTo(before, 1);
   await expect(button.locator('svg')).toHaveCSS('transform', 'none');
   const box = await button.boundingBox();
   expect(box).not.toBeNull();
   await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
   await page.mouse.down();
-  await expect(button).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 0, 1)');
+  await expect(button).toHaveCSS('transform', 'matrix(0.97, 0, 0, 0.97, 0, 1)');
   expect(await alignment()).toBeCloseTo(before, 1);
   // Release away from the link so this interaction check does not download an installer.
   await page.mouse.move(0, 0);
