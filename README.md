@@ -133,3 +133,9 @@ The homepage includes the full desktop tutorial with native controls, English ca
 ## 0.3.0 release
 
 The new release adds video review and CSV delivery, Shutterstock image exports, General and agency-specific metadata, verified editorial helpers, Anthropic Claude and OpenRouter, and native media-tool builds. Video originals remain external and need a separate backup. See the 0.3.0 changelog and versioned release notes for migration and runtime-test limits. Release staging records the actual macOS signing kind; local certificate signing is not Apple Developer ID signing or notarization.
+
+## Public policies
+
+`/terms/`, `/refund-policy/`, and `/privacy/` are separate static, prerendered pages linked from the footer with `help@thoock.ryuda.me` as the support contact. They also work on direct visits without JavaScript. The refund request window is seven calendar days from successful payment, with the agreed exceptions and eligibility preserved during investigation. Terms and privacy content reflect the reviewed desktop licensing, external AI requests, checkout, activation, analytics, and browser-storage flows.
+
+Before submitting these URLs for merchant review, confirm the operator’s registered public seller name and the scope of future updates included with lifetime purchases. The pages do not promise all future updates, specify an invented data-retention deadline, or establish DOKU approval. Checkout acceptance/version recording in the separate payment-service repository is not implemented by these landing-page changes.

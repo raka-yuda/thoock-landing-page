@@ -10,7 +10,13 @@ const start = () => hydration ??= Promise.all([
   import('./hydrate'),
   /^\/changelog(?:\/|$)/.test(location.pathname)
     ? import('./pages/ChangelogPage')
-    : import('./pages/HomePage'),
+    : /^\/refund-policy(?:\/|$)/.test(location.pathname)
+      ? import('./pages/RefundPolicyPage')
+      : /^\/terms(?:\/|$)/.test(location.pathname)
+        ? import('./pages/TermsPage')
+        : /^\/privacy(?:\/|$)/.test(location.pathname)
+          ? import('./pages/PrivacyPage')
+          : import('./pages/HomePage'),
 ]).then(([module, { default: Page }]) => module.hydrate(Page));
 const warm = () => { void start(); };
 
