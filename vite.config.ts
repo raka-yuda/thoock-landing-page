@@ -57,23 +57,26 @@ export default defineConfig({
       configurePreviewServer(server) {
         server.middlewares.use((request, response, next) => {
           const url = new URL(request.url ?? '/', 'http://localhost');
-          if (url.pathname !== '/changelog') return next();
+          if (!['/changelog', '/refund-policy', '/terms', '/privacy'].includes(url.pathname)) return next();
           // The directory index is canonical; SPA fallback must not serve the
           // homepage's prerendered HTML for the changelog route.
-          response.writeHead(308, { Location: `/changelog/${url.search}` });
+          response.writeHead(308, { Location: `${url.pathname}/${url.search}` });
           response.end();
         });
       },
       configureServer(server) {
         server.middlewares.use(async (request, response, next) => {
           const pathname = new URL(request.url ?? '/', 'http://localhost').pathname;
-          if (request.method !== 'GET' || !['/', '/index.html', '/changelog', '/changelog/', '/changelog/index.html'].includes(pathname)) return next();
+          if (request.method !== 'GET' || !['/', '/index.html', '/changelog', '/changelog/', '/changelog/index.html', '/refund-policy', '/refund-policy/', '/refund-policy/index.html', '/terms', '/terms/', '/terms/index.html', '/privacy', '/privacy/', '/privacy/index.html'].includes(pathname)) return next();
           try {
             const changelog = pathname.startsWith('/changelog');
-            const file = changelog ? './changelog/index.html' : './index.html';
+            const refund = pathname.startsWith('/refund-policy');
+            const terms = pathname.startsWith('/terms');
+            const privacy = pathname.startsWith('/privacy');
+            const file = terms ? './terms/index.html' : privacy ? './privacy/index.html' : refund ? './refund-policy/index.html' : changelog ? './changelog/index.html' : './index.html';
             const template = await server.transformIndexHtml(pathname, await readFile(fileURLToPath(new URL(file, import.meta.url)), 'utf8'));
             const { renderPage } = await server.ssrLoadModule('/src/entry-server.tsx');
-            const markup = renderPage(changelog ? '/changelog' : '/');
+            const markup = renderPage(terms ? '/terms' : privacy ? '/privacy' : refund ? '/refund-policy' : changelog ? '/changelog' : '/');
             response.setHeader('Content-Type', 'text/html; charset=utf-8');
             response.end(template.replace('<div id="root"></div>', `<div id="root" data-prerendered="true">${markup}</div>`));
           } catch (error) {
@@ -87,6 +90,9 @@ export default defineConfig({
     rollupOptions: {
       input: {
         home: fileURLToPath(new URL('./index.html', import.meta.url)),
+        terms: fileURLToPath(new URL('./terms/index.html', import.meta.url)),
+        privacy: fileURLToPath(new URL('./privacy/index.html', import.meta.url)),
+        refundPolicy: fileURLToPath(new URL('./refund-policy/index.html', import.meta.url)),
         changelog: fileURLToPath(new URL('./changelog/index.html', import.meta.url)),
       },
     },
